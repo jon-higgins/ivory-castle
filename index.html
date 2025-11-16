@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ivory Castle</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- Resizable Board Area -->
+        <div id="boardArea">
+            <div id="boardScroll">
+                <div id="boardContainer">
+                    <img src="IC_Board.png" usemap="#image-map" id="gameBoard">
+                    <div id="playerCounters"></div>
+                    
+                    <map name="image-map">
+                        <area alt="start" title="start" data-position="start" coords="172,1900,307,1932" shape="rect">
+                        <area alt="1" title="1" data-position="1" coords="300,1853,425,1907" shape="rect">
+                        <area alt="2" title="2" data-position="2" coords="368,1812,485,1859" shape="rect">
+                        <area alt="3" title="3" data-position="3" coords="759,1765,886,1799" shape="rect">
+                        <area alt="4" title="4" data-position="4" coords="714,1721,816,1752" shape="rect">
+                        <area alt="5" title="5" data-position="5" coords="651,1692,756,1714" shape="rect">
+                        <area alt="6" title="6" data-position="6" coords="575,1658,677,1693" shape="rect">
+                        <area alt="7" title="7" data-position="7" coords="533,1609,639,1654" shape="rect">
+                        <area alt="8" title="8" data-position="8" coords="700,1558,579,1605" shape="rect">
+                        <area alt="9" title="9" data-position="9" coords="704,1554,827,1601" shape="rect">
+                        <area alt="10" title="10" data-position="10" coords="828,1532,953,1577" shape="rect">
+                        <area alt="11" title="11" data-position="11" coords="955,1538,1073,1577" shape="rect">
+                        <area alt="12" title="12" data-position="12" coords="1074,1523,1155,1573" shape="rect">
+                        <area alt="13" title="13" data-position="13" coords="1346,1515,49" shape="circle">
+                        <area alt="14" title="14" data-position="14" coords="1069,1391,1152,1445" shape="rect">
+                        <area alt="15" title="15" data-position="15" coords="972,1389,1063,1433" shape="rect">
+                        <area alt="16" title="16" data-position="16" coords="970,1437,860,1397" shape="rect">
+                        <area alt="17" title="17" data-position="17" coords="764,1385,858,1430" shape="rect">
+                        <area alt="18" title="18" data-position="18" coords="682,1385,765,1428" shape="rect">
+                        <area alt="19" title="19" data-position="19" coords="591,1365,678,1427" shape="rect">
+                        <area alt="20" title="20" data-position="20" coords="477,1367,580,1424" shape="rect">
+                        <area alt="21" title="21" data-position="21" coords="418,1367,55" shape="circle">
+                        <area alt="22" title="22" data-position="22" coords="441,1294,542,1338" shape="rect">
+                        <area alt="23" title="23" data-position="23" coords="541,1276,638,1313" shape="rect">
+                        <area alt="24" title="24" data-position="24" coords="646,1254,748,1300" shape="rect">
+                        <area alt="25" title="25" data-position="25" coords="755,1249,855,1296" shape="rect">
+                        <area alt="26" title="26" data-position="26" coords="858,1256,944,1297" shape="rect">
+                        <area alt="27" title="27" data-position="27" coords="949,1250,1034,1298" shape="rect">
+                        <area alt="28" title="28" data-position="28" coords="1187,1249,1302,1305" shape="rect">
+                        <area alt="29" title="29" data-position="29" coords="1349,1239,1460,1305" shape="rect">
+                        <area alt="30" title="30" data-position="30" coords="1485,1241,1379,1194" shape="rect">
+                        <area alt="31" title="31" data-position="31" coords="1301,1156,1438,1194" shape="rect">
+                        <area alt="32" title="32" data-position="32" coords="1200,1115,1284,1180" shape="rect">
+                        <area alt="33" title="33" data-position="33" coords="1076,1097,1195,1173" shape="rect">
+                        <area alt="34" title="34" data-position="34" coords="953,1083,1028,1134" shape="rect">
+                        <area alt="35" title="35" data-position="35" coords="842,1051,947,1119" shape="rect">
+                        <area alt="36" title="36" data-position="36" coords="756,1041,828,1088" shape="rect">
+                        <area alt="37" title="37" data-position="37" coords="658,1015,748,1077" shape="rect">
+                        <area alt="38" title="38" data-position="38" coords="563,1006,653,1065" shape="rect">
+                        <area alt="39" title="39" data-position="39" coords="472,1050,560,992" shape="rect">
+                        <area alt="40" title="40" data-position="40" coords="451,968,44" shape="circle">
+                        <area alt="41" title="41" data-position="41" coords="478,917,592,967" shape="rect">
+                        <area alt="42" title="42" data-position="42" coords="592,886,694,939" shape="rect">
+                        <area alt="43" title="43" data-position="43" coords="700,935,761,849" shape="rect">
+                        <area alt="44" title="44" data-position="44" coords="760,912,831,818" shape="rect">
+                        <area alt="45" title="45" data-position="45" coords="828,866,920,768" shape="rect">
+                        <area alt="46" title="46" data-position="46" coords="921,818,1004,708" shape="rect">
+                        <area alt="47" title="47" data-position="47" coords="447,616,359,706" shape="rect">
+                        <area alt="48" title="48" data-position="48" coords="454,594,588,669" shape="rect">
+                        <area alt="49" title="49" data-position="49" coords="708,596,591,661" shape="rect">
+                        <area alt="50" title="50" data-position="50" coords="795,610,708,653" shape="rect">
+                        <area alt="51" title="51" data-position="51" coords="794,604,893,661" shape="rect">
+                        <area alt="52" title="52" data-position="52" coords="898,611,995,658" shape="rect">
+                        <area alt="53" title="53" data-position="53" coords="998,606,1109,656" shape="rect">
+                        <area alt="54" title="54" data-position="54" coords="1112,648,1226,601" shape="rect">
+                        <area alt="55" title="55" data-position="55" coords="1229,629,1298,577" shape="rect">
+                        <area alt="56" title="56" data-position="56" coords="1407,578,59" shape="circle">
+                        <area alt="57" title="57" data-position="57" coords="1288,526,1355,572" shape="rect">
+                        <area alt="58" title="58" data-position="58" coords="1215,512,1284,564" shape="rect">
+                        <area alt="59" title="59" data-position="59" coords="1128,498,1207,547" shape="rect">
+                        <area alt="60" title="60" data-position="60" coords="1003,475,1120,524" shape="rect">
+                        <area alt="61" title="61" data-position="61" coords="730,471,873,536" shape="rect">
+                        <area alt="62" title="62" data-position="62" coords="713,442,819,472" shape="rect">
+                        <area alt="63" title="63" data-position="63" coords="725,362,804,439" shape="rect">
+                    </map>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resizer Handle -->
+        <div id="resizer"></div>
+
+        <!-- Control Panel -->
+        <div id="controlPanel">
+            <h1>Ivory Castle</h1>
+            
+            <div id="setupArea">
+                <div class="setup-section">
+                    <label for="numPlayers">Number of Players (2-6):</label>
+                    <input type="number" id="numPlayers" min="2" max="6" value="2">
+                </div>
+                <div id="playerNamesInput"></div>
+                <button id="startGame">Start Game</button>
+            </div>
+
+            <div id="gameArea" style="display: none;">
+                <div id="currentPlayerInfo">
+                    <h2 id="currentPlayerName"></h2>
+                    <div id="playerStatus"></div>
+                </div>
+
+                <div id="diceArea">
+                    <div id="diceDisplay" class="initial"></div>
+                    <button id="rollDiceBtn">Roll Dice</button>
+                </div>
+
+                <div id="messageArea"></div>
+
+                <div id="playersInfo"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setup Modal -->
+    <div id="setupModal" class="modal">
+        <div class="modal-content">
+            <h2>Enter Player Names</h2>
+            <div id="modalPlayerInputs"></div>
+            <button id="confirmNames">Confirm</button>
+        </div>
+    </div>
+
+    <!-- Winner Modal -->
+    <div id="winnerModal" class="modal">
+        <div class="modal-content">
+            <h2>🎉 Congratulations! 🎉</h2>
+            <p id="winnerMessage"></p>
+            <button id="newGame">New Game</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+    <script>
+        // Make image map responsive
+        function resizeImageMap() {
+            const img = document.getElementById('gameBoard');
+            const map = document.querySelector('map[name="image-map"]');
+            
+            if (!img || !map || !img.complete) return;
+            
+            const areas = map.getElementsByTagName('area');
+            const imgWidth = img.naturalWidth;
+            const imgHeight = img.naturalHeight;
+            const displayWidth = img.offsetWidth;
+            const displayHeight = img.offsetHeight;
+            
+            if (imgWidth === 0 || imgHeight === 0) return;
+            
+            const scaleX = displayWidth / imgWidth;
+            const scaleY = displayHeight / imgHeight;
+            
+            for (let area of areas) {
+                const coords = area.dataset.originalCoords || area.getAttribute('coords');
+                if (!area.dataset.originalCoords) {
+                    area.dataset.originalCoords = coords;
+                }
+                
+                const coordsArray = coords.split(',').map(Number);
+                const scaledCoords = coordsArray.map((coord, index) => {
+                    return Math.round(coord * (index % 2 === 0 ? scaleX : scaleY));
+                });
+                
+                area.setAttribute('coords', scaledCoords.join(','));
+            }
+        }
+        
+        // Wait for image to fully load before scaling
+        const boardImg = document.getElementById('gameBoard');
+        if (boardImg) {
+            boardImg.addEventListener('load', resizeImageMap);
+        }
+        
+        window.addEventListener('load', resizeImageMap);
+        window.addEventListener('resize', resizeImageMap);
+        
+        // Also resize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(resizeImageMap, 100);
+            });
+        } else {
+            setTimeout(resizeImageMap, 100);
+        }
+    </script>
+</body>
+</html>

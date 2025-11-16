@@ -1,0 +1,456 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    background: #2c3e50;
+}
+
+#gameContainer {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Board Area */
+#boardArea {
+    flex: 1;
+    min-width: 300px;
+    background: #34495e;
+    position: relative;
+    overflow: hidden;
+}
+
+#boardScroll {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    position: relative;
+}
+
+#boardContainer {
+    position: relative;
+    display: inline-block;
+}
+
+#playerCounters {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+#gameBoard {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.player-counter {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    transition: all 0.5s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Resizer */
+#resizer {
+    width: 8px;
+    background: #1a252f;
+    cursor: col-resize;
+    position: relative;
+    flex-shrink: 0;
+}
+
+#resizer:hover {
+    background: #3498db;
+}
+
+/* Control Panel */
+#controlPanel {
+    width: 400px;
+    min-width: 300px;
+    max-width: 600px;
+    background: #ecf0f1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+h2 {
+    color: #2c3e50;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+/* Setup Area */
+#setupArea {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.setup-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.setup-section label {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+input[type="number"],
+input[type="text"] {
+    padding: 10px;
+    border: 2px solid #bdc3c7;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+input[type="text"] {
+    width: 100%;
+}
+
+button {
+    padding: 12px 24px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #2980b9;
+}
+
+button:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+}
+
+/* Game Area */
+#currentPlayerInfo {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#currentPlayerName {
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+#playerStatus {
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+/* Dice Area */
+#diceArea {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#diceDisplay {
+    width: 100px;
+    height: 100px;
+    margin: 20px auto;
+    background: white;
+    border: 3px solid #2c3e50;
+    border-radius: 15px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 5px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+#diceDisplay.initial {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #764ba2;
+}
+
+#diceDisplay.initial::before {
+    content: '?';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 60px;
+    color: white;
+    font-weight: bold;
+}
+
+.dice-dot {
+    width: 18px;
+    height: 18px;
+    background: #2c3e50;
+    border-radius: 50%;
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.dice-rolling {
+    animation: roll 0.5s ease-in-out;
+}
+
+@keyframes roll {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(90deg) scale(1.1); }
+    50% { transform: rotate(180deg) scale(0.9); }
+    75% { transform: rotate(270deg) scale(1.1); }
+}
+
+#rollDiceBtn {
+    width: 100%;
+    background: #27ae60;
+}
+
+#rollDiceBtn:hover {
+    background: #229954;
+}
+
+#rollDiceBtn:disabled {
+    background: #95a5a6;
+}
+
+/* Message Area */
+#messageArea {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    min-height: 60px;
+    color: #856404;
+    font-weight: 500;
+    display: none;
+}
+
+#messageArea.show {
+    display: block;
+}
+
+#messageArea.happy {
+    background: #d4edda;
+    border-color: #28a745;
+    color: #155724;
+}
+
+#messageArea.sad {
+    background: #f8d7da;
+    border-color: #dc3545;
+    color: #721c24;
+}
+
+#messageArea.neutral {
+    background: #d1ecf1;
+    border-color: #17a2b8;
+    color: #0c5460;
+}
+
+/* Players Info */
+#playersInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.player-card {
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.player-card.active {
+    border: 3px solid #3498db;
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.player-name {
+    font-weight: 600;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.player-color-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.player-position {
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+.player-state {
+    font-size: 12px;
+    color: #e74c3c;
+    font-style: italic;
+    margin-bottom: 5px;
+}
+
+.player-journey {
+    margin-top: 8px;
+    border-top: 1px solid #ecf0f1;
+    padding-top: 8px;
+}
+
+.journey-label {
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-bottom: 4px;
+}
+
+.journey-list {
+    max-height: 80px;
+    overflow-y: auto;
+    font-size: 11px;
+    color: #95a5a6;
+    background: #f8f9fa;
+    padding: 6px;
+    border-radius: 4px;
+}
+
+.journey-item {
+    padding: 2px 0;
+}
+
+.journey-item:last-child {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#modalPlayerInputs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.player-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.player-input-group label {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+#confirmNames,
+#newGame {
+    width: 100%;
+    margin-top: 10px;
+}
+
+#winnerMessage {
+    text-align: center;
+    font-size: 24px;
+    margin: 20px 0;
+    color: #27ae60;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #ecf0f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #95a5a6;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #7f8c8d;
+}
