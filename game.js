@@ -790,6 +790,7 @@ function sleep(ms) {
 // Games Played Counter
 function initGamesCounter() {
     const count = getGamesPlayed();
+    console.log('Initializing games counter:', count);
     updateCounterDisplay(count);
 }
 
@@ -801,18 +802,20 @@ function getGamesPlayed() {
 function incrementGamesPlayed() {
     const current = getGamesPlayed();
     const newCount = current + 1;
+    console.log('Incrementing games played from', current, 'to', newCount);
     localStorage.setItem('ivorycastle_games_played', newCount.toString());
     updateCounterDisplay(newCount);
 }
 
 function updateCounterDisplay(count) {
     const counterValue = document.getElementById('counterValue');
+    console.log('Updating counter display to:', count, 'Element found:', !!counterValue);
     if (counterValue) {
         counterValue.textContent = count;
-        // Trigger animation by removing and re-adding animation class
-        counterValue.style.animation = 'none';
-        setTimeout(() => {
-            counterValue.style.animation = '';
-        }, 10);
+        // Trigger animation by adding class
+        counterValue.classList.remove('updating');
+        // Force reflow to restart animation
+        void counterValue.offsetWidth;
+        counterValue.classList.add('updating');
     }
 }
