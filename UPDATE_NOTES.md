@@ -1,6 +1,38 @@
 # Ivory Castle - Updates & Fixes
 
-## Latest Features (Version 2.2)
+## Latest Features (Version 2.3)
+
+### 📊 Games Played Counter
+**Persistent Game Tracking:**
+- **Visual Counter Badge** - Displays in bottom right corner of control panel
+  - Beautiful purple gradient badge design (matches dice styling)
+  - Shows "Games Played: [number]"
+  - Always visible during setup and gameplay
+  
+- **Persistence** - Uses browser localStorage to track across sessions
+  - Counter survives page refreshes
+  - Counter survives browser restarts
+  - Stored with key: `ivorycastle_games_played`
+  
+- **Animations & Effects**
+  - Pop animation (scale to 130%) when counter updates
+  - Hover effect: badge lifts and shadow increases
+  - Smooth transitions (0.3s)
+  
+- **When It Counts:**
+  - Increments when a new game starts (player names confirmed)
+  - Does not increment on page load or during gameplay
+  - Resets only if browser data is cleared
+
+**Benefits:**
+- Track how many times you've played
+- Creates sense of progress and history
+- Completely local - no data sent anywhere
+- Unobtrusive and beautifully designed
+
+---
+
+## Previous Features (Version 2.2)
 
 ### ✨ Visual Enhancements
 **Enhanced Visual Feedback:**
@@ -127,6 +159,26 @@
 
 ## Files Updated
 
+### Version 2.3 - Games Played Counter
+1. **index.html**
+   - Added games counter HTML structure at bottom of control panel
+   - Counter visible outside gameArea div (always shown)
+
+2. **styles.css**
+   - Added #gamesCounter styling with gradient background
+   - Position: absolute bottom-right
+   - Created counterUpdate animation for pop effect
+   - Added hover effects and transitions
+   - Made #controlPanel position: relative for absolute positioning
+
+3. **game.js**
+   - Added initGamesCounter() - initializes counter on page load
+   - Added getGamesPlayed() - retrieves count from localStorage
+   - Added incrementGamesPlayed() - increments and saves counter
+   - Added updateCounterDisplay() - updates display with animation
+   - Called initGamesCounter() in DOMContentLoaded
+   - Called incrementGamesPlayed() in confirmPlayerNames()
+
 ### Version 2.2 - Visual Enhancements
 1. **styles.css**
    - Enhanced #currentPlayerInfo with dynamic border and background color
@@ -239,5 +291,5 @@ Both systems use the same scaling calculations (image display size / natural siz
 ---
 
 *Last Updated: November 17, 2025*
-*Version: 2.2 - Visual Enhancements (Player Color Shading & Sparkly Messages)*
+*Version: 2.3 - Games Played Counter*
 

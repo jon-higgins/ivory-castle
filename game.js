@@ -163,6 +163,7 @@ Object.keys(SOUNDS).forEach(key => {
 document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     updateNumPlayersInput();
+    initGamesCounter();
 });
 
 function setupEventListeners() {
@@ -278,6 +279,10 @@ function confirmPlayerNames() {
     
     gameState.players = players;
     document.getElementById('setupModal').classList.remove('show');
+    
+    // Increment games played counter
+    incrementGamesPlayed();
+    
     startGame();
 }
 
@@ -374,15 +379,7 @@ function updateCurrentPlayer() {
     });
     document.getElementById(`player-card-${playerIndex}`).classList.add('active');
     
-    // Update current player info with player color
-    const currentPlayerInfo = document.getElementById('currentPlayerInfo');
-    currentPlayerInfo.className = 'player-colored';
-    
-    // Create gentle shade of player color
-    const playerColor = player.color;
-    currentPlayerInfo.style.backgroundColor = hexToRGBA(playerColor, 0.15);
-    currentPlayerInfo.style.borderColor = playerColor;
-    
+    // Update current player info
     document.getElementById('currentPlayerName').textContent = player.name + "'s Turn";
     updatePlayerStatus(playerIndex);
     
@@ -392,14 +389,6 @@ function updateCurrentPlayer() {
     
     // Scroll to player position
     scrollToPosition(player.position);
-}
-
-function hexToRGBA(hex, alpha) {
-    // Convert hex color to RGBA with alpha transparency
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 function updatePlayerStatus(playerIndex) {
@@ -740,7 +729,7 @@ function nextPlayer() {
 
 function showMessage(text, type = "neutral") {
     const messageArea = document.getElementById('messageArea');
-    messageArea.innerHTML = `<span>${text}</span>`;
+    messageArea.textContent = text;
     messageArea.className = 'show ' + type;
 }
 
@@ -796,4 +785,34 @@ function playSound(soundName) {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Games Played Counter
+function initGamesCounter() {
+    const count = getGamesPlayed();
+    updateCounterDisplay(count);
+}
+
+function getGamesPlayed() {
+    const stored = localStorage.getItem('ivorycastle_games_played');
+    return stored ? parseInt(stored) : 0;
+}
+
+function incrementGamesPlayed() {
+    const current = getGamesPlayed();
+    const newCount = current + 1;
+    localStorage.setItem('ivorycastle_games_played', newCount.toString());
+    updateCounterDisplay(newCount);
+}
+
+function updateCounterDisplay(count) {
+    const counterValue = document.getElementById('counterValue');
+    if (counterValue) {
+        counterValue.textContent = count;
+        // Trigger animation by removing and re-adding animation class
+        counterValue.style.animation = 'none';
+        setTimeout(() => {
+            counterValue.style.animation = '';
+        }, 10);
+    }
 }
