@@ -95,6 +95,11 @@ Protected from backward moves, missing turns, and waiting for 6 on your NEXT tur
 - Colored counters with player initials show each player's position
 - Resizable split-screen layout (drag the divider between board and controls)
 
+### Game Controls
+- **Restart Game Button** - Start a fresh game anytime with confirmation
+- **Sound Toggle** - Mute/unmute all sound effects with a smooth sliding switch
+- Roll dice button (only active when it's your turn)
+
 ### Player Information
 - See each player's current position
 - Track special statuses (waiting for 6, missing turn, archer protection)

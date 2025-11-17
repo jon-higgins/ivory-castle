@@ -4,7 +4,8 @@ const gameState = {
     currentPlayerIndex: 0,
     gameStarted: false,
     waitingForRoll: true,
-    playerOrder: []
+    playerOrder: [],
+    soundMuted: false
 };
 
 // Player colors
@@ -170,6 +171,8 @@ function setupEventListeners() {
     document.getElementById('confirmNames').addEventListener('click', confirmPlayerNames);
     document.getElementById('rollDiceBtn').addEventListener('click', rollDice);
     document.getElementById('newGame').addEventListener('click', resetGame);
+    document.getElementById('restartGameBtn').addEventListener('click', confirmRestart);
+    document.getElementById('muteToggle').addEventListener('change', toggleMute);
     
     // Resizer
     setupResizer();
@@ -741,7 +744,32 @@ function resetGame() {
     location.reload();
 }
 
+function confirmRestart() {
+    if (gameState.gameStarted) {
+        if (confirm('Are you sure you want to restart the game? All progress will be lost.')) {
+            location.reload();
+        }
+    } else {
+        location.reload();
+    }
+}
+
+function toggleMute() {
+    const muteToggle = document.getElementById('muteToggle');
+    gameState.soundMuted = muteToggle.checked;
+    
+    // Update label text
+    const label = document.querySelector('.mute-label');
+    if (gameState.soundMuted) {
+        label.textContent = '🔇 Sound';
+    } else {
+        label.textContent = '🔊 Sound';
+    }
+}
+
 function playSound(soundName) {
+    if (gameState.soundMuted) return;
+    
     try {
         SOUNDS[soundName].currentTime = 0;
         SOUNDS[soundName].play().catch(e => console.log('Sound play failed:', e));

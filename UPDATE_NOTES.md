@@ -1,5 +1,26 @@
 # Ivory Castle - Updates & Fixes
 
+## Latest Features (Version 2.1)
+
+### 🎮 New Game Controls
+**Added:**
+- **Restart Game Button** - Restart the game at any time
+  - Shows confirmation dialog if game is in progress
+  - Red button prominently displayed in control panel
+  - Preserves all game files and settings
+
+- **Sound Mute Toggle** - Control audio playback
+  - Smooth sliding toggle switch
+  - Visual indicators: 🔊 (sound on) / 🔇 (sound muted)
+  - Mute state persists during gameplay
+  - Clean, modern toggle design with animations
+
+- **Enhanced Title** - 🏰 Ivory Castle 🏰
+  - Added castle emojis for visual appeal
+  - Better branding and game identity
+
+---
+
 ## Issues Fixed
 
 ### 1. ✅ Image Map Scaling Issue - FULLY RESOLVED
@@ -84,6 +105,26 @@
 
 ## Files Updated
 
+### Version 2.1 - New Features
+1. **index.html**
+   - Added game controls section with restart button and mute toggle
+   - Added castle emojis (🏰) to title
+   - Enhanced control panel structure
+
+2. **styles.css**
+   - Added styling for game controls section
+   - Created animated toggle switch for mute control
+   - Added control button styling with hover effects
+   - Responsive layout for new controls
+
+3. **game.js**
+   - Added `soundMuted` state to game state
+   - Created `confirmRestart()` function with dialog
+   - Created `toggleMute()` function for sound control
+   - Updated `playSound()` to respect mute state
+   - Added event listeners for new controls
+
+### Version 2.0 - Coordinate Scaling Fix
 1. **index.html**
    - Added comprehensive responsive image map scaling script
    - Multiple event listeners (load, resize, image.load)
@@ -160,5 +201,5 @@ Both systems use the same scaling calculations (image display size / natural siz
 ---
 
 *Last Updated: November 16, 2025*
-*Version: 2.0 - Coordinate Scaling Fixed*
+*Version: 2.1 - New Game Controls & Sound Toggle*
 
