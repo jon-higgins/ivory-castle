@@ -263,6 +263,11 @@ function confirmPlayerNames() {
     const numPlayers = parseInt(document.getElementById('numPlayers').value);
     const players = [];
     
+    // Reset Jammy mode
+    gameState.jammyMode = false;
+    gameState.jammyPlayerIndex = -1;
+    gameState.jammyRollCount = 0;
+    
     for (let i = 0; i < numPlayers; i++) {
         const name = document.getElementById(`player${i+1}Name`).value.trim();
         if (!name) {
@@ -280,11 +285,15 @@ function confirmPlayerNames() {
             journey: []
         });
         
-        // Silent Easter egg: Check for "Jammy"
+        // Silent Easter egg: Check for "Jammy" (exact match, case-sensitive)
         if (name === 'Jammy') {
             gameState.jammyMode = true;
             gameState.jammyPlayerIndex = i;
             gameState.jammyRollCount = 0;
+            console.log('🥚 EASTER EGG ACTIVATED! Jammy mode enabled.');
+            console.log('   Player name:', name);
+            console.log('   Player index:', i);
+            console.log('   Forced sequence:', gameState.jammyRollSequence);
         }
     }
     
@@ -304,6 +313,12 @@ function startGame() {
     gameState.playerOrder = [...Array(gameState.players.length).keys()];
     shuffleArray(gameState.playerOrder);
     gameState.currentPlayerIndex = 0;
+    
+    console.log('Game started. Player order:', gameState.playerOrder);
+    if (gameState.jammyMode) {
+        console.log('🥚 Jammy is at player index:', gameState.jammyPlayerIndex);
+        console.log('🥚 Jammy will play at turn position:', gameState.playerOrder.indexOf(gameState.jammyPlayerIndex));
+    }
     
     // Hide setup, show game
     document.getElementById('setupArea').style.display = 'none';
@@ -435,6 +450,8 @@ async function rollDice() {
     const playerIndex = gameState.playerOrder[gameState.currentPlayerIndex];
     const player = gameState.players[playerIndex];
     
+    console.log('Roll dice - Current player:', player.name, '(index:', playerIndex + ')');
+    
     // Check if player must miss this turn
     if (player.missNextTurn) {
         player.missNextTurn = false;
@@ -457,12 +474,19 @@ async function rollDice() {
     let roll;
     
     // Silent Easter egg: Force optimal sequence for Jammy
-    if (gameState.jammyMode && playerIndex === gameState.jammyPlayerIndex && 
+    if (gameState.jammyMode && 
+        playerIndex === gameState.jammyPlayerIndex && 
         gameState.jammyRollCount < gameState.jammyRollSequence.length) {
+        
         roll = gameState.jammyRollSequence[gameState.jammyRollCount];
+        console.log('🥚 JAMMY FORCED ROLL #' + (gameState.jammyRollCount + 1) + ':', roll);
+        console.log('   (Normal random would have been:', Math.floor(Math.random() * 6) + 1 + ')');
         gameState.jammyRollCount++;
     } else {
         roll = Math.floor(Math.random() * 6) + 1;
+        if (gameState.jammyMode && playerIndex === gameState.jammyPlayerIndex) {
+            console.log('🥚 Jammy sequence exhausted, using random roll:', roll);
+        }
     }
     
     // Show dice with dots
@@ -498,6 +522,8 @@ async function movePlayer(playerIndex, spaces) {
     let currentPos = player.position === 'start' ? 0 : player.position;
     let newPos = currentPos + spaces;
     
+    console.log(`${player.name} moving from ${currentPos} by ${spaces} spaces to ${newPos}`);
+    
     // Check if exceeds 63
     if (newPos > 63) {
         showMessage(`You rolled ${spaces} but need exactly ${63 - currentPos} to win. Stay put!`, "neutral");
@@ -516,6 +542,7 @@ async function movePlayer(playerIndex, spaces) {
     
     // Check for win
     if (newPos === 63) {
+        console.log('🎉 WINNER:', player.name);
         playSound('winner');
         showWinner(playerIndex);
         return;
@@ -544,6 +571,7 @@ async function processSpecialSpace(playerIndex, position) {
     // Check move_forward
     if (RULES.move_forward[position]) {
         const move = RULES.move_forward[position];
+        console.log(`Forward jump from ${position} to ${move.to}`);
         showMessage(move.text, "happy");
         playSound('happyMove');
         player.position = move.to;
@@ -553,6 +581,7 @@ async function processSpecialSpace(playerIndex, position) {
         
         if (move.to === 63) {
             await sleep(1500);
+            console.log('🎉 WINNER:', player.name);
             playSound('winner');
             showWinner(playerIndex);
             return;
@@ -764,6 +793,10 @@ function hideMessage() {
 
 function showWinner(playerIndex) {
     const player = gameState.players[playerIndex];
+    if (gameState.jammyMode && playerIndex === gameState.jammyPlayerIndex) {
+        console.log('🥚 Jammy won using the easter egg! 🎉');
+        console.log('   Total forced rolls used:', gameState.jammyRollCount);
+    }
     document.getElementById('winnerMessage').textContent = 
         `${player.name} has reached the Ivory Castle and won the game! 🏰`;
     document.getElementById('winnerModal').classList.add('show');
@@ -814,20 +847,24 @@ function sleep(ms) {
 // Animation Functions
 function showGiantAnimation() {
     const giantAnim = document.getElementById('giantAnimation');
-    giantAnim.classList.add('active');
-    
-    setTimeout(() => {
-        giantAnim.classList.remove('active');
-    }, 2000);
+    if (giantAnim) {
+        giantAnim.classList.add('active');
+        
+        setTimeout(() => {
+            giantAnim.classList.remove('active');
+        }, 2000);
+    }
 }
 
 function showArcherAnimation() {
     const archerAnim = document.getElementById('archerAnimation');
-    archerAnim.classList.add('active');
-    
-    setTimeout(() => {
-        archerAnim.classList.remove('active');
-    }, 2000);
+    if (archerAnim) {
+        archerAnim.classList.add('active');
+        
+        setTimeout(() => {
+            archerAnim.classList.remove('active');
+        }, 2000);
+    }
 }
 
 // Games Played Counter
