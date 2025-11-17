@@ -561,7 +561,6 @@ async function processSpecialSpace(playerIndex, position) {
     // Check archer protection (applies to current space before other effects)
     if (RULES.archer[position]) {
         player.hasArcherProtection = true;
-        showArcherAnimation(); // Show archer shooting arrow!
         showMessage(RULES.archer[position], "happy");
         playSound('archer');
         addToJourney(playerIndex, "⚔️ Archer Protection!");
@@ -596,7 +595,6 @@ async function processSpecialSpace(playerIndex, position) {
     // Check move_back (only if no archer protection)
     if (RULES.move_back[position] && !player.hasArcherProtection) {
         const move = RULES.move_back[position];
-        showGiantAnimation(); // Show giant waving club!
         showMessage(move.text, "sad");
         playSound('sadMove');
         player.position = move.to;
@@ -612,7 +610,6 @@ async function processSpecialSpace(playerIndex, position) {
     // Check wait_for_6 (only if no archer protection)
     if (RULES.wait_for_6[position] && !player.hasArcherProtection) {
         player.waitingFor6 = true;
-        showGiantAnimation(); // Show giant waving club!
         showMessage(RULES.wait_for_6[position], "sad");
         playSound('sadMove');
         addToJourney(playerIndex, "Must wait for 6");
@@ -631,7 +628,6 @@ async function processSpecialSpace(playerIndex, position) {
     // Check miss_turn (only if no archer protection)
     if (RULES.miss_turn[position] && !player.hasArcherProtection) {
         player.missNextTurn = true;
-        showGiantAnimation(); // Show giant waving club!
         showMessage(RULES.miss_turn[position], "sad");
         playSound('missTurn');
         addToJourney(playerIndex, "Will miss next turn");
@@ -842,29 +838,6 @@ function playSound(soundName) {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// Animation Functions
-function showGiantAnimation() {
-    const giantAnim = document.getElementById('giantAnimation');
-    if (giantAnim) {
-        giantAnim.classList.add('active');
-        
-        setTimeout(() => {
-            giantAnim.classList.remove('active');
-        }, 2000);
-    }
-}
-
-function showArcherAnimation() {
-    const archerAnim = document.getElementById('archerAnimation');
-    if (archerAnim) {
-        archerAnim.classList.add('active');
-        
-        setTimeout(() => {
-            archerAnim.classList.remove('active');
-        }, 2000);
-    }
 }
 
 // Games Played Counter
