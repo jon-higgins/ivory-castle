@@ -1,6 +1,28 @@
 # Ivory Castle - Updates & Fixes
 
-## Latest Features (Version 2.1)
+## Latest Features (Version 2.2)
+
+### ✨ Visual Enhancements
+**Enhanced Visual Feedback:**
+- **Player Color Shading** - Current player's turn section now displays a gentle shade (15% opacity) of their counter color with a matching colored border
+- **Sparkly Message Box** - Special outcome messages now feature:
+  - Larger font size (16px, up from 14px)
+  - Beautiful gradient backgrounds instead of flat colors
+  - Continuous sparkle sweep animation across the box
+  - Enhanced shadows with color glow effects
+  - Smooth slide-in entrance animation
+  - Rounded corners (12px) and thicker borders (3px)
+  - All while preserving the green=good, red=bad, blue=neutral color system
+
+**Benefits:**
+- Instantly recognize whose turn it is by color
+- More engaging and noticeable special events
+- Professional, polished appearance
+- Better readability with larger text
+
+---
+
+## Previous Features (Version 2.1)
 
 ### 🎮 New Game Controls
 **Added:**
@@ -105,6 +127,22 @@
 
 ## Files Updated
 
+### Version 2.2 - Visual Enhancements
+1. **styles.css**
+   - Enhanced #currentPlayerInfo with dynamic border and background color
+   - Added player-colored class with transition effects
+   - Complete #messageArea redesign with gradients and animations
+   - Added sparkle animation (@keyframes sparkle)
+   - Added messageSlideIn animation for smooth entrance
+   - Increased font sizes, padding, and border widths
+   - Enhanced box shadows with color-specific glows
+
+2. **game.js**
+   - Added hexToRGBA() function to convert hex colors to RGBA
+   - Updated updateCurrentPlayer() to apply player color shading
+   - Modified showMessage() to wrap text in span for sparkle effect
+   - Dynamic color application based on current player
+
 ### Version 2.1 - New Features
 1. **index.html**
    - Added game controls section with restart button and mute toggle
@@ -200,6 +238,6 @@ Both systems use the same scaling calculations (image display size / natural siz
 
 ---
 
-*Last Updated: November 16, 2025*
-*Version: 2.1 - New Game Controls & Sound Toggle*
+*Last Updated: November 17, 2025*
+*Version: 2.2 - Visual Enhancements (Player Color Shading & Sparkly Messages)*
 

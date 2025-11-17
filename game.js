@@ -374,7 +374,15 @@ function updateCurrentPlayer() {
     });
     document.getElementById(`player-card-${playerIndex}`).classList.add('active');
     
-    // Update current player info
+    // Update current player info with player color
+    const currentPlayerInfo = document.getElementById('currentPlayerInfo');
+    currentPlayerInfo.className = 'player-colored';
+    
+    // Create gentle shade of player color
+    const playerColor = player.color;
+    currentPlayerInfo.style.backgroundColor = hexToRGBA(playerColor, 0.15);
+    currentPlayerInfo.style.borderColor = playerColor;
+    
     document.getElementById('currentPlayerName').textContent = player.name + "'s Turn";
     updatePlayerStatus(playerIndex);
     
@@ -384,6 +392,14 @@ function updateCurrentPlayer() {
     
     // Scroll to player position
     scrollToPosition(player.position);
+}
+
+function hexToRGBA(hex, alpha) {
+    // Convert hex color to RGBA with alpha transparency
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 function updatePlayerStatus(playerIndex) {
@@ -724,7 +740,7 @@ function nextPlayer() {
 
 function showMessage(text, type = "neutral") {
     const messageArea = document.getElementById('messageArea');
-    messageArea.textContent = text;
+    messageArea.innerHTML = `<span>${text}</span>`;
     messageArea.className = 'show ' + type;
 }
 
