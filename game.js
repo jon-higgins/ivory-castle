@@ -178,6 +178,15 @@ function setupEventListeners() {
     document.getElementById('newGame').addEventListener('click', resetGame);
     document.getElementById('restartGameBtn').addEventListener('click', confirmRestart);
     document.getElementById('muteToggle').addEventListener('change', toggleMute);
+    document.getElementById('rulesLink').addEventListener('click', showRulesModal);
+    document.getElementById('closeRulesBtn').addEventListener('click', closeRulesModal);
+    
+    // Close rules modal when clicking outside
+    document.getElementById('rulesModal').addEventListener('click', function(e) {
+        if (e.target.id === 'rulesModal') {
+            closeRulesModal();
+        }
+    });
     
     // Resizer
     setupResizer();
@@ -977,24 +986,40 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Games Played Counter
-function initGamesCounter() {
-    const count = getGamesPlayed();
-    console.log('Initializing games counter:', count);
-    updateCounterDisplay(count);
+// Rules Modal Functions
+function showRulesModal(e) {
+    e.preventDefault();
+    document.getElementById('rulesModal').classList.add('show');
 }
 
-function getGamesPlayed() {
-    const stored = localStorage.getItem('ivorycastle_games_played');
-    return stored ? parseInt(stored) : 0;
+function closeRulesModal() {
+    document.getElementById('rulesModal').classList.remove('show');
 }
 
-function incrementGamesPlayed() {
-    const current = getGamesPlayed();
-    const newCount = current + 1;
-    console.log('Incrementing games played from', current, 'to', newCount);
-    localStorage.setItem('ivorycastle_games_played', newCount.toString());
-    updateCounterDisplay(newCount);
+// Games Played Counter - Server-based (shared across all users)
+async function initGamesCounter() {
+    try {
+        const response = await fetch('counter.php');
+        const data = await response.json();
+        console.log('Initializing games counter:', data.count);
+        updateCounterDisplay(data.count);
+    } catch (error) {
+        console.error('Error loading counter:', error);
+        updateCounterDisplay(0);
+    }
+}
+
+async function incrementGamesPlayed() {
+    try {
+        const response = await fetch('counter.php', {
+            method: 'POST'
+        });
+        const data = await response.json();
+        console.log('Incrementing games played to', data.count);
+        updateCounterDisplay(data.count);
+    } catch (error) {
+        console.error('Error incrementing counter:', error);
+    }
 }
 
 function updateCounterDisplay(count) {
