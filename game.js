@@ -182,6 +182,9 @@ function setupEventListeners() {
     // Resizer
     setupResizer();
     
+    // Mobile panel toggle
+    setupMobilePanelToggle();
+    
     // Re-render counters on window resize to maintain proper scaling
     window.addEventListener('resize', function() {
         if (gameState.gameStarted) {
@@ -227,6 +230,92 @@ function setupResizer() {
         isResizing = false;
         document.body.style.cursor = 'default';
     });
+}
+
+function setupMobilePanelToggle() {
+    const controlPanel = document.getElementById('controlPanel');
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let isPanelCollapsed = false;
+
+    // Check if mobile
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
+
+    // Toggle panel
+    function togglePanel() {
+        if (!isMobile()) return;
+        
+        isPanelCollapsed = !isPanelCollapsed;
+        if (isPanelCollapsed) {
+            controlPanel.classList.add('mobile-collapsed');
+        } else {
+            controlPanel.classList.remove('mobile-collapsed');
+        }
+    }
+
+    // Auto-collapse after roll on mobile
+    function autoCollapseOnMobile() {
+        if (isMobile() && gameState.gameStarted) {
+            setTimeout(() => {
+                isPanelCollapsed = true;
+                controlPanel.classList.add('mobile-collapsed');
+            }, 1000);
+        }
+    }
+
+    // Touch handlers for swipe
+    controlPanel.addEventListener('touchstart', function(e) {
+        if (!isMobile()) return;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    controlPanel.addEventListener('touchend', function(e) {
+        if (!isMobile()) return;
+        touchEndY = e.changedTouches[0].clientY;
+        handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+        const swipeDistance = touchStartY - touchEndY;
+        const minSwipeDistance = 30;
+
+        if (Math.abs(swipeDistance) > minSwipeDistance) {
+            if (swipeDistance > 0) {
+                // Swipe up - expand
+                isPanelCollapsed = false;
+                controlPanel.classList.remove('mobile-collapsed');
+            } else {
+                // Swipe down - collapse
+                isPanelCollapsed = true;
+                controlPanel.classList.add('mobile-collapsed');
+            }
+        }
+    }
+
+    // Tap on header to toggle
+    const createHeaderTapZone = () => {
+        if (!isMobile()) return;
+        
+        const headerArea = document.querySelector('.mobile-control-header');
+        if (headerArea) {
+            headerArea.addEventListener('click', togglePanel);
+        }
+    };
+
+    // Initialize - start collapsed on mobile if game started
+    window.addEventListener('resize', function() {
+        if (isMobile() && gameState.gameStarted) {
+            autoCollapseOnMobile();
+        } else {
+            controlPanel.classList.remove('mobile-collapsed');
+        }
+    });
+
+    // Expose function for use after rolling dice
+    gameState.autoCollapsePanel = autoCollapseOnMobile;
+    gameState.createHeaderTapZone = createHeaderTapZone;
 }
 
 function updateNumPlayersInput() {
@@ -322,7 +411,45 @@ function startGame() {
     
     // Hide setup, show game
     document.getElementById('setupArea').style.display = 'none';
-    document.getElementById('gameArea').style.display = 'block';
+    const gameArea = document.getElementById('gameArea');
+    gameArea.style.display = 'block';
+    
+    // Add mobile structure
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+        // Wrap essential controls in mobile header
+        const currentPlayerInfo = document.getElementById('currentPlayerInfo');
+        const diceArea = document.getElementById('diceArea');
+        const messageArea = document.getElementById('messageArea');
+        
+        // Create mobile header wrapper if it doesn't exist
+        if (!document.querySelector('.mobile-control-header')) {
+            const mobileHeader = document.createElement('div');
+            mobileHeader.className = 'mobile-control-header';
+            gameArea.insertBefore(mobileHeader, gameArea.firstChild);
+            mobileHeader.appendChild(currentPlayerInfo);
+            mobileHeader.appendChild(diceArea);
+            mobileHeader.appendChild(messageArea);
+        }
+        
+        // Create mobile content wrapper if it doesn't exist
+        if (!document.querySelector('.mobile-control-content')) {
+            const mobileContent = document.createElement('div');
+            mobileContent.className = 'mobile-control-content';
+            const gameControls = document.getElementById('gameControls');
+            const playersInfo = document.getElementById('playersInfo');
+            
+            if (gameControls) mobileContent.appendChild(gameControls);
+            if (playersInfo) mobileContent.appendChild(playersInfo);
+            
+            gameArea.appendChild(mobileContent);
+        }
+        
+        // Initialize header tap zone
+        if (gameState.createHeaderTapZone) {
+            setTimeout(gameState.createHeaderTapZone, 100);
+        }
+    }
     
     // Create player cards
     createPlayerCards();
@@ -335,6 +462,11 @@ function startGame() {
     
     // Set initial dice display
     showInitialDice();
+    
+    // Auto-collapse on mobile
+    if (gameState.autoCollapsePanel) {
+        gameState.autoCollapsePanel();
+    }
 }
 
 function showInitialDice() {
@@ -494,6 +626,11 @@ async function rollDice() {
     showDice(roll);
     
     await sleep(800);
+    
+    // Auto-collapse panel on mobile after showing result
+    if (gameState.autoCollapsePanel) {
+        gameState.autoCollapsePanel();
+    }
     
     // Check if waiting for 6
     if (player.waitingFor6) {

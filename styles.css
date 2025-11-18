@@ -602,3 +602,284 @@ button:disabled {
 #controlPanel {
     position: relative;
 }
+
+/* ===== MOBILE RESPONSIVE DESIGN ===== */
+
+@media (max-width: 768px) {
+    body {
+        overflow: auto;
+    }
+
+    #gameContainer {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    /* Board takes full screen on mobile */
+    #boardArea {
+        flex: 1;
+        min-width: 100%;
+        height: 70vh;
+        min-height: 400px;
+    }
+
+    /* Hide desktop resizer on mobile */
+    #resizer {
+        display: none;
+    }
+
+    /* Control Panel at bottom */
+    #controlPanel {
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #ecf0f1;
+        padding: 0;
+        max-height: 50vh;
+        overflow: hidden;
+        z-index: 500;
+        box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
+        border-radius: 16px 16px 0 0;
+        transition: transform 0.3s ease;
+    }
+
+    /* Collapsed state on mobile */
+    #controlPanel.mobile-collapsed {
+        transform: translateY(calc(100% - 80px));
+    }
+
+    /* Drag handle for mobile */
+    #controlPanel::before {
+        content: '';
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 4px;
+        background: #bdc3c7;
+        border-radius: 2px;
+        z-index: 1000;
+    }
+
+    #controlPanel > * {
+        padding: 0 15px;
+    }
+
+    /* Mobile header area - always visible */
+    .mobile-control-header {
+        padding: 20px 15px 10px 15px !important;
+        background: #ecf0f1;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    /* Scrollable content area */
+    .mobile-control-content {
+        overflow-y: auto;
+        max-height: calc(50vh - 80px);
+        padding-bottom: 20px;
+    }
+
+    h1 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    /* Compact current player info on mobile */
+    #currentPlayerInfo {
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+
+    #currentPlayerName {
+        font-size: 16px;
+        margin-bottom: 4px;
+    }
+
+    #playerStatus {
+        font-size: 12px;
+    }
+
+    /* Compact dice area */
+    #diceArea {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    #diceDisplay {
+        width: 70px;
+        height: 70px;
+        margin: 10px auto;
+    }
+
+    #diceDisplay.initial::before {
+        font-size: 40px;
+    }
+
+    .dice-dot {
+        width: 12px;
+        height: 12px;
+    }
+
+    #rollDiceBtn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    /* Hide secondary controls when collapsed */
+    #controlPanel.mobile-collapsed #gameControls,
+    #controlPanel.mobile-collapsed #playersInfo,
+    #controlPanel.mobile-collapsed .journey-list {
+        display: none;
+    }
+
+    /* Compact game controls */
+    #gameControls {
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+
+    .control-btn {
+        width: 100%;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .mute-toggle {
+        justify-content: center;
+        width: 100%;
+    }
+
+    /* Compact player cards */
+    .player-card {
+        padding: 8px;
+        margin-bottom: 8px;
+    }
+
+    .player-header {
+        margin-bottom: 4px;
+    }
+
+    .player-name {
+        font-size: 14px;
+    }
+
+    .player-position {
+        font-size: 12px;
+    }
+
+    .journey-list {
+        max-height: 60px;
+        font-size: 10px;
+    }
+
+    /* Message area mobile */
+    #messageArea {
+        padding: 10px;
+        min-height: 40px;
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+    /* Games counter repositioned for mobile */
+    #gamesCounter {
+        bottom: auto;
+        top: 10px;
+        right: 10px;
+        font-size: 11px;
+        padding: 6px 10px;
+    }
+
+    .counter-value {
+        font-size: 12px;
+        padding: 2px 8px;
+    }
+
+    /* Modal adjustments for mobile */
+    .modal-content {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    #winnerMessage {
+        font-size: 18px;
+    }
+
+    /* Counter size on mobile */
+    .player-counter {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+        border: 2px solid white;
+    }
+
+    /* Setup area mobile */
+    #setupArea {
+        gap: 10px;
+    }
+
+    .setup-section {
+        gap: 5px;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+    #boardArea {
+        height: 65vh;
+    }
+
+    #controlPanel {
+        max-height: 55vh;
+    }
+
+    h1 {
+        font-size: 18px;
+    }
+
+    #currentPlayerName {
+        font-size: 14px;
+    }
+
+    #diceDisplay {
+        width: 60px;
+        height: 60px;
+    }
+
+    #diceDisplay.initial::before {
+        font-size: 35px;
+    }
+
+    .dice-dot {
+        width: 10px;
+        height: 10px;
+    }
+
+    .player-counter {
+        width: 25px;
+        height: 25px;
+        font-size: 12px;
+    }
+}
