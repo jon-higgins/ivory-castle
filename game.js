@@ -179,7 +179,11 @@ function setupEventListeners() {
     document.getElementById('restartGameBtn').addEventListener('click', confirmRestart);
     document.getElementById('muteToggle').addEventListener('change', toggleMute);
     document.getElementById('rulesLink').addEventListener('click', showRulesModal);
-    document.getElementById('closeRulesBtn').addEventListener('click', closeRulesModal);
+    document.getElementById('closeRulesBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeRulesModal();
+    });
     
     // Close rules modal when clicking outside
     document.getElementById('rulesModal').addEventListener('click', function(e) {
@@ -1012,6 +1016,7 @@ function closeRulesModal() {
     const modal = document.getElementById('rulesModal');
     if (modal) {
         modal.classList.remove('show');
+        modal.style.display = ''; // Reset inline display style
         document.body.style.overflow = ''; // Restore scrolling
     }
 }
