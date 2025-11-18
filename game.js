@@ -1021,35 +1021,43 @@ function closeRulesModal() {
     }
 }
 
-// Games Played Counter - Server-based (shared across all users)
+// Games Played Counter - Using CountAPI (free third-party service)
+// No server setup required! Works across all users/computers
 async function initGamesCounter() {
     try {
-        const response = await fetch('counter.php');
+        // Get current count from CountAPI
+        const response = await fetch('https://api.countapi.xyz/get/ivorycastle/games_played');
         const data = await response.json();
-        console.log('Initializing games counter:', data.count);
-        updateCounterDisplay(data.count);
+        console.log('Initializing games counter (CountAPI):', data.value);
+        updateCounterDisplay(data.value || 0);
     } catch (error) {
-        console.error('Error loading counter:', error);
-        updateCounterDisplay(0);
+        console.warn('CountAPI not available, using localStorage fallback:', error);
+        // Fallback to localStorage
+        const localCount = localStorage.getItem('ivorycastle_games_played') || '0';
+        updateCounterDisplay(parseInt(localCount));
     }
 }
 
 async function incrementGamesPlayed() {
     try {
-        const response = await fetch('counter.php', {
-            method: 'POST'
-        });
+        // Increment counter on CountAPI (hit endpoint)
+        const response = await fetch('https://api.countapi.xyz/hit/ivorycastle/games_played');
         const data = await response.json();
-        console.log('Incrementing games played to', data.count);
-        updateCounterDisplay(data.count);
+        console.log('Incrementing games played to (CountAPI):', data.value);
+        updateCounterDisplay(data.value);
     } catch (error) {
-        console.error('Error incrementing counter:', error);
+        console.warn('CountAPI not available, using localStorage fallback:', error);
+        // Fallback to localStorage
+        const localCount = parseInt(localStorage.getItem('ivorycastle_games_played') || '0');
+        const newCount = localCount + 1;
+        localStorage.setItem('ivorycastle_games_played', newCount.toString());
+        updateCounterDisplay(newCount);
     }
 }
 
 function updateCounterDisplay(count) {
     const counterValue = document.getElementById('counterValue');
-    console.log('Updating counter display to:', count, 'Element found:', !!counterValue);
+    console.log('Updating counter display to:', count);
     if (counterValue) {
         counterValue.textContent = count;
         // Trigger animation by adding class
