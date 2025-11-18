@@ -543,11 +543,47 @@ button:disabled {
     background: #7f8c8d;
 }
 
-/* Games Played Counter */
+/* Footer with Rules Link, Version, and Counter */
+#gameFooter {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid #bdc3c7;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#rulesLink {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 12px;
+    transition: color 0.3s;
+    white-space: nowrap;
+}
+
+#rulesLink:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+#versionInfo {
+    font-size: 11px;
+    color: #95a5a6;
+    font-style: italic;
+    white-space: nowrap;
+}
+
+/* Games Played Counter - now inside footer */
 #gamesCounter {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     padding: 8px 14px;
@@ -558,8 +594,13 @@ button:disabled {
     display: flex;
     align-items: center;
     gap: 6px;
-    z-index: 100;
     user-select: none;
+    transition: all 0.3s ease;
+}
+
+#gamesCounter:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+    transform: translateY(-2px);
 }
 
 .counter-label {
@@ -593,44 +634,8 @@ button:disabled {
     }
 }
 
-#gamesCounter:hover {
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
-    transform: translateY(-2px);
-    transition: all 0.3s ease;
-}
-
 #controlPanel {
     position: relative;
-}
-
-/* Footer with Rules Link and Version */
-#gameFooter {
-    margin-top: auto;
-    padding-top: 20px;
-    border-top: 1px solid #bdc3c7;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 12px;
-    color: #7f8c8d;
-}
-
-#rulesLink {
-    color: #3498db;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.3s;
-}
-
-#rulesLink:hover {
-    color: #2980b9;
-    text-decoration: underline;
-}
-
-#versionInfo {
-    font-size: 11px;
-    color: #95a5a6;
-    font-style: italic;
 }
 
 /* Rules Modal */
@@ -871,13 +876,31 @@ button:disabled {
         margin-bottom: 10px;
     }
 
-    /* Games counter repositioned for mobile */
+    /* Footer on mobile */
+    #gameFooter {
+        padding: 10px 15px;
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .footer-left {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    #rulesLink {
+        font-size: 11px;
+    }
+
+    #versionInfo {
+        font-size: 10px;
+    }
+
     #gamesCounter {
-        bottom: auto;
-        top: 10px;
-        right: 10px;
         font-size: 11px;
         padding: 6px 10px;
+        justify-content: center;
     }
 
     .counter-value {
@@ -921,20 +944,6 @@ button:disabled {
     button {
         padding: 10px 20px;
         font-size: 14px;
-    }
-
-    /* Footer on mobile */
-    #gameFooter {
-        padding: 10px 15px;
-        font-size: 11px;
-    }
-
-    #rulesLink {
-        font-size: 11px;
-    }
-
-    #versionInfo {
-        font-size: 10px;
     }
 
     /* Rules modal on mobile */

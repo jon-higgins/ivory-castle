@@ -188,6 +188,16 @@ function setupEventListeners() {
         }
     });
     
+    // Close rules modal with ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('rulesModal');
+            if (modal && modal.classList.contains('show')) {
+                closeRulesModal();
+            }
+        }
+    });
+    
     // Resizer
     setupResizer();
     
@@ -988,12 +998,22 @@ function sleep(ms) {
 
 // Rules Modal Functions
 function showRulesModal(e) {
-    e.preventDefault();
-    document.getElementById('rulesModal').classList.add('show');
+    if (e) e.preventDefault();
+    const modal = document.getElementById('rulesModal');
+    if (modal) {
+        modal.classList.add('show');
+        // Ensure modal is visible
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
 }
 
 function closeRulesModal() {
-    document.getElementById('rulesModal').classList.remove('show');
+    const modal = document.getElementById('rulesModal');
+    if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = ''; // Restore scrolling
+    }
 }
 
 // Games Played Counter - Server-based (shared across all users)
