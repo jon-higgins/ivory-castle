@@ -561,7 +561,15 @@ function updateCurrentPlayer() {
     document.getElementById(`player-card-${playerIndex}`).classList.add('active');
     
     // Update current player info
+    const currentPlayerInfo = document.getElementById('currentPlayerInfo');
     document.getElementById('currentPlayerName').textContent = player.name + "'s Turn";
+    
+    // Color the current player info box with player's color
+    if (currentPlayerInfo) {
+        currentPlayerInfo.style.background = `linear-gradient(135deg, ${player.color}15 0%, ${player.color}30 100%)`;
+        currentPlayerInfo.style.borderLeft = `4px solid ${player.color}`;
+    }
+    
     updatePlayerStatus(playerIndex);
     
     // Enable/disable roll button
