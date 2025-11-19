@@ -1030,48 +1030,71 @@ function closeRulesModal() {
 }
 
 // Games Played Counter - Using CountAPI (free third-party service)
-// No server setup required! Works across all users/computers
+// 
+// HOW IT WORKS:
+// - CountAPI is a free service that stores a counter in the cloud
+// - Key: "ivorycastle/games_played" is shared globally across ALL users
+// - The counter persists across browsers, devices, and sessions
+// - On first load, if key doesn't exist, it shows 0
+// - When first game starts, /hit creates the key and increments to 1
+// - All subsequent loads will see the shared counter value
+//
+// TROUBLESHOOTING:
+// - If you see 0 in incognito/mobile: The key might not exist yet, start a game to create it
+// - If you see "—": CountAPI service is temporarily unavailable
+// - Check browser console (F12) for detailed logs
+//
 async function initGamesCounter() {
     try {
-        // Get current count from CountAPI
+        // Use /get to fetch without incrementing (will return 404 if key doesn't exist yet)
         const response = await fetch('https://api.countapi.xyz/get/ivorycastle/games_played');
         const data = await response.json();
-        console.log('Initializing games counter (CountAPI):', data.value);
-        updateCounterDisplay(data.value || 0);
+        
+        // Check if key exists
+        if (data.value !== undefined) {
+            console.log('✓ Games counter initialized (CountAPI):', data.value);
+            updateCounterDisplay(data.value);
+        } else {
+            // Key doesn't exist yet, will be created on first game
+            console.log('ℹ Counter key not created yet. Start a game to initialize the global counter.');
+            updateCounterDisplay(0);
+        }
     } catch (error) {
-        console.warn('CountAPI not available, using localStorage fallback:', error);
-        // Fallback to localStorage
-        const localCount = localStorage.getItem('ivorycastle_games_played') || '0';
-        updateCounterDisplay(parseInt(localCount));
+        console.log('ℹ Counter will be initialized when first game starts globally');
+        updateCounterDisplay(0);
     }
 }
 
 async function incrementGamesPlayed() {
     try {
-        // Increment counter on CountAPI (hit endpoint)
+        // Increment counter on CountAPI (hit endpoint auto-creates if doesn't exist)
         const response = await fetch('https://api.countapi.xyz/hit/ivorycastle/games_played');
         const data = await response.json();
-        console.log('Incrementing games played to (CountAPI):', data.value);
-        updateCounterDisplay(data.value);
+        
+        if (data.value !== undefined) {
+            console.log('✓ Games played incremented to:', data.value);
+            updateCounterDisplay(data.value);
+        } else {
+            throw new Error('Invalid response from CountAPI');
+        }
     } catch (error) {
-        console.warn('CountAPI not available, using localStorage fallback:', error);
-        // Fallback to localStorage
-        const localCount = parseInt(localStorage.getItem('ivorycastle_games_played') || '0');
-        const newCount = localCount + 1;
-        localStorage.setItem('ivorycastle_games_played', newCount.toString());
-        updateCounterDisplay(newCount);
+        console.error('❌ CountAPI unavailable:', error.message);
+        // Show "?" to indicate counter service is unavailable
+        updateCounterDisplay('—');
     }
 }
 
 function updateCounterDisplay(count) {
     const counterValue = document.getElementById('counterValue');
-    console.log('Updating counter display to:', count);
+    console.log('Display counter:', count);
     if (counterValue) {
         counterValue.textContent = count;
-        // Trigger animation by adding class
-        counterValue.classList.remove('updating');
-        // Force reflow to restart animation
-        void counterValue.offsetWidth;
-        counterValue.classList.add('updating');
+        // Trigger animation by adding class (only for numbers)
+        if (typeof count === 'number') {
+            counterValue.classList.remove('updating');
+            // Force reflow to restart animation
+            void counterValue.offsetWidth;
+            counterValue.classList.add('updating');
+        }
     }
 }
