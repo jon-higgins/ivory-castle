@@ -1029,57 +1029,53 @@ function closeRulesModal() {
     }
 }
 
-// Games Played Counter - Using CountAPI (free third-party service)
+// Games Played Counter - Using CountAPI Replacement (mileshilliard.com)
 // 
 // HOW IT WORKS:
-// - CountAPI is a free service that stores a counter in the cloud
-// - Key: "ivorycastle/games_played" is shared globally across ALL users
+// - Free counting service (replacement for the defunct countapi.xyz)
+// - Key: "ivorycastle_games" is shared globally across ALL users
 // - The counter persists across browsers, devices, and sessions
-// - On first load, if key doesn't exist, it shows 0
-// - When first game starts, /hit creates the key and increments to 1
-// - All subsequent loads will see the shared counter value
+// - Works reliably on desktop, mobile, and incognito mode
 //
 // TROUBLESHOOTING:
-// - If you see 0 in incognito/mobile: The key might not exist yet, start a game to create it
-// - If you see "—": CountAPI service is temporarily unavailable
+// - If you see "—": Service is temporarily unavailable
 // - Check browser console (F12) for detailed logs
 //
 async function initGamesCounter() {
     try {
-        // Use /get to fetch without incrementing (will return 404 if key doesn't exist yet)
-        const response = await fetch('https://api.countapi.xyz/get/ivorycastle/games_played');
+        // Get current count from the counter service
+        const response = await fetch('https://countapi.mileshilliard.com/api/v1/get/ivorycastle_games');
         const data = await response.json();
         
-        // Check if key exists
         if (data.value !== undefined) {
-            console.log('✓ Games counter initialized (CountAPI):', data.value);
-            updateCounterDisplay(data.value);
+            console.log('✓ Games counter initialized:', data.value);
+            updateCounterDisplay(parseInt(data.value));
         } else {
-            // Key doesn't exist yet, will be created on first game
-            console.log('ℹ Counter key not created yet. Start a game to initialize the global counter.');
+            // Key doesn't exist yet
+            console.log('ℹ Counter will be initialized on first game start');
             updateCounterDisplay(0);
         }
     } catch (error) {
-        console.log('ℹ Counter will be initialized when first game starts globally');
+        console.log('ℹ Counter will be initialized when first game starts');
         updateCounterDisplay(0);
     }
 }
 
 async function incrementGamesPlayed() {
     try {
-        // Increment counter on CountAPI (hit endpoint auto-creates if doesn't exist)
-        const response = await fetch('https://api.countapi.xyz/hit/ivorycastle/games_played');
+        // Increment counter (auto-creates if doesn't exist)
+        const response = await fetch('https://countapi.mileshilliard.com/api/v1/hit/ivorycastle_games');
         const data = await response.json();
         
         if (data.value !== undefined) {
-            console.log('✓ Games played incremented to:', data.value);
-            updateCounterDisplay(data.value);
+            console.log('✓ Games played:', data.value);
+            updateCounterDisplay(parseInt(data.value));
         } else {
-            throw new Error('Invalid response from CountAPI');
+            throw new Error('Invalid response from counter service');
         }
     } catch (error) {
-        console.error('❌ CountAPI unavailable:', error.message);
-        // Show "?" to indicate counter service is unavailable
+        console.error('❌ Counter service unavailable:', error.message);
+        // Show "—" to indicate counter service is unavailable
         updateCounterDisplay('—');
     }
 }

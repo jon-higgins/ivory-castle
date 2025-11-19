@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CountAPI Test</title>
+    <title>Counter API Test - Ivory Castle</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -43,18 +43,20 @@
         .success { color: #27ae60; }
         .error { color: #e74c3c; }
         .info { color: #3498db; }
+        .warning { color: #f39c12; }
     </style>
 </head>
 <body>
     <h1>🔍 Ivory Castle Counter Diagnostic</h1>
     
     <div class="test-box">
-        <h2>CountAPI Status Test</h2>
-        <p>This page tests the CountAPI connection for Ivory Castle game counter.</p>
+        <h2>Counter API Status Test</h2>
+        <p>This page tests the counter API connection for Ivory Castle game.</p>
+        <p><strong>Service:</strong> countapi.mileshilliard.com (replacement for defunct countapi.xyz)</p>
         
         <button onclick="testGet()">1. Test GET (Check Current Value)</button>
         <button onclick="testHit()">2. Test HIT (Increment Counter)</button>
-        <button onclick="testInfo()">3. Test INFO (Key Details)</button>
+        <button onclick="testSet()">3. Test SET (Set Value)</button>
         <button onclick="clearLog()">Clear Log</button>
         
         <div id="result"></div>
@@ -68,23 +70,29 @@
     <div class="test-box">
         <h2>Understanding the Counter</h2>
         <ul>
-            <li><strong>Namespace:</strong> ivorycastle</li>
-            <li><strong>Key:</strong> games_played</li>
+            <li><strong>Service:</strong> CountAPI Replacement by Miles Hilliard</li>
+            <li><strong>Key:</strong> ivorycastle_games</li>
             <li><strong>Scope:</strong> Global (shared across all users worldwide)</li>
-            <li><strong>Persistence:</strong> Permanent (stored in CountAPI cloud)</li>
+            <li><strong>Persistence:</strong> Permanent</li>
+        </ul>
+        <p><strong>Why We Switched:</strong></p>
+        <ul>
+            <li>CountAPI.xyz SSL expired August 2024</li>
+            <li>Service has been down/unreliable since mid-2023</li>
+            <li>New service provides identical functionality</li>
         </ul>
         <p><strong>Expected Behavior:</strong></p>
         <ul>
-            <li>If key doesn't exist yet → Shows 0, creates on first increment</li>
-            <li>If CountAPI is down → Shows "—"</li>
+            <li>First hit creates the key and sets it to 1</li>
             <li>Works on all browsers, devices, incognito mode</li>
-            <li>Same counter visible to everyone</li>
+            <li>Same counter visible to everyone globally</li>
+            <li>If you see "—" the service is unavailable</li>
         </ul>
     </div>
 
     <script>
-        const namespace = 'ivorycastle';
-        const key = 'games_played';
+        const API_BASE = 'https://countapi.mileshilliard.com/api/v1';
+        const KEY = 'ivorycastle_games';
         let logBuffer = [];
         
         function log(message, type = 'info') {
@@ -102,38 +110,39 @@
         async function testGet() {
             log('Testing GET endpoint...', 'info');
             try {
-                const url = `https://api.countapi.xyz/get/${namespace}/${key}`;
+                const url = `${API_BASE}/get/${KEY}`;
                 log(`Fetching: ${url}`, 'info');
                 
                 const response = await fetch(url);
                 log(`Response status: ${response.status}`, response.ok ? 'success' : 'error');
                 
                 const data = await response.json();
-                log(`Response data: ${JSON.stringify(data)}`, 'success');
+                log(`Response: ${JSON.stringify(data, null, 2)}`, 'success');
                 
                 if (data.value !== undefined) {
                     document.getElementById('counterDisplay').textContent = data.value;
                     log(`✓ Counter value: ${data.value}`, 'success');
-                } else {
-                    log(`⚠ Key might not exist yet. Try HIT to create it.`, 'error');
+                } else if (data.error) {
+                    log(`⚠ ${data.error} - Key will be created on first HIT`, 'warning');
+                    document.getElementById('counterDisplay').textContent = '0';
                 }
             } catch (error) {
                 log(`✗ Error: ${error.message}`, 'error');
-                log(`Possible causes: Network issue, CORS, or CountAPI down`, 'error');
+                log(`Check: Network connection, CORS, or service availability`, 'error');
             }
         }
         
         async function testHit() {
             log('Testing HIT endpoint (will increment)...', 'info');
             try {
-                const url = `https://api.countapi.xyz/hit/${namespace}/${key}`;
+                const url = `${API_BASE}/hit/${KEY}`;
                 log(`Fetching: ${url}`, 'info');
                 
                 const response = await fetch(url);
                 log(`Response status: ${response.status}`, response.ok ? 'success' : 'error');
                 
                 const data = await response.json();
-                log(`Response data: ${JSON.stringify(data)}`, 'success');
+                log(`Response: ${JSON.stringify(data, null, 2)}`, 'success');
                 
                 if (data.value !== undefined) {
                     document.getElementById('counterDisplay').textContent = data.value;
@@ -146,21 +155,24 @@
             }
         }
         
-        async function testInfo() {
-            log('Testing INFO endpoint...', 'info');
+        async function testSet() {
+            const value = prompt('Enter value to set (or cancel to skip):');
+            if (value === null) return;
+            
+            log(`Testing SET endpoint (value=${value})...`, 'info');
             try {
-                const url = `https://api.countapi.xyz/info/${namespace}/${key}`;
+                const url = `${API_BASE}/set/${KEY}?value=${value}`;
                 log(`Fetching: ${url}`, 'info');
                 
                 const response = await fetch(url);
                 log(`Response status: ${response.status}`, response.ok ? 'success' : 'error');
                 
                 const data = await response.json();
-                log(`Response data: ${JSON.stringify(data, null, 2)}`, 'success');
+                log(`Response: ${JSON.stringify(data, null, 2)}`, 'success');
                 
                 if (data.value !== undefined) {
                     document.getElementById('counterDisplay').textContent = data.value;
-                    log(`✓ Key info retrieved`, 'success');
+                    log(`✓ Counter set to: ${data.value} (was: ${data.old_value})`, 'success');
                 }
             } catch (error) {
                 log(`✗ Error: ${error.message}`, 'error');
@@ -169,7 +181,8 @@
         
         // Auto-test on load
         window.addEventListener('load', () => {
-            log('=== Ivory Castle Counter Diagnostic ===', 'info');
+            log('=== Ivory Castle Counter Diagnostic v1.4 ===', 'info');
+            log('Using: countapi.mileshilliard.com (CountAPI replacement)', 'info');
             log('Running automatic GET test...', 'info');
             setTimeout(testGet, 500);
         });
