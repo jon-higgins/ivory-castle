@@ -150,6 +150,7 @@ const SOUNDS = {
     normalMove: new Audio('move.mp3'),
     happyMove: new Audio('happy.mp3'),
     sadMove: new Audio('sad.mp3'),
+    scream: new Audio('scream.mp3'),
     extraTurn: new Audio('extra-turn.mp3'),
     missTurn: new Audio('miss-turn.mp3'),
     archer: new Audio('Arrow.mp3'),
@@ -764,7 +765,12 @@ async function processSpecialSpace(playerIndex, position) {
     if (RULES.move_back[position] && !player.hasArcherProtection) {
         const move = RULES.move_back[position];
         showMessage(move.text, "sad");
-        playSound('sadMove');
+        // Play scream sound for moves back to 24 or 14, sadMove otherwise
+        if (move.to === 24 || move.to === 14) {
+            playSound('scream');
+        } else {
+            playSound('sadMove');
+        }
         player.position = move.to;
         addToJourney(playerIndex, `Moved back to ${move.to}`);
         updatePlayerPosition(playerIndex);
