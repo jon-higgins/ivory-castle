@@ -6,6 +6,7 @@ const gameState = {
     waitingForRoll: true,
     playerOrder: [],
     soundMuted: false,
+    easterEggEnabled: false,
     jammyMode: false,
     jammyPlayerIndex: -1,
     jammyRollSequence: [4, 2, 1, 3, 4, 4, 2],
@@ -185,6 +186,9 @@ function setupEventListeners() {
         e.stopPropagation();
         closeRulesModal();
     });
+    
+    // Easter egg toggle
+    document.getElementById('easterEggToggle').addEventListener('click', toggleEasterEgg);
     
     // Close rules modal when clicking outside
     document.getElementById('rulesModal').addEventListener('click', function(e) {
@@ -399,14 +403,17 @@ function confirmPlayerNames() {
         });
         
         // Silent Easter egg: Check for "Jammy" (exact match, case-sensitive)
+        // Always track the player index, but only activate if toggle is enabled
         if (name === 'Jammy') {
-            gameState.jammyMode = true;
             gameState.jammyPlayerIndex = i;
             gameState.jammyRollCount = 0;
-            console.log('🥚 EASTER EGG ACTIVATED! Jammy mode enabled.');
-            console.log('   Player name:', name);
-            console.log('   Player index:', i);
-            console.log('   Forced sequence:', gameState.jammyRollSequence);
+            if (gameState.easterEggEnabled) {
+                gameState.jammyMode = true;
+                console.log('🥚 EASTER EGG ACTIVATED! Jammy mode enabled.');
+                console.log('   Player name:', name);
+                console.log('   Player index:', i);
+                console.log('   Forced sequence:', gameState.jammyRollSequence);
+            }
         }
     }
     
@@ -996,6 +1003,22 @@ function toggleMute() {
         label.textContent = '🔇 Sound';
     } else {
         label.textContent = '🔊 Sound';
+    }
+}
+
+function toggleEasterEgg() {
+    gameState.easterEggEnabled = !gameState.easterEggEnabled;
+    const toggle = document.getElementById('easterEggToggle');
+    
+    if (gameState.easterEggEnabled) {
+        toggle.classList.add('active');
+        // If game is running and Jammy exists, activate jammyMode
+        if (gameState.gameStarted && gameState.jammyPlayerIndex >= 0) {
+            gameState.jammyMode = true;
+        }
+    } else {
+        toggle.classList.remove('active');
+        gameState.jammyMode = false;
     }
 }
 

@@ -998,3 +998,15 @@ button:disabled {
         font-size: 12px;
     }
 }
+
+/* Easter egg toggle */
+.easter-toggle {
+    color: #3498db;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s ease;
+}
+
+.easter-toggle.active {
+    color: #e74c3c;
+}
