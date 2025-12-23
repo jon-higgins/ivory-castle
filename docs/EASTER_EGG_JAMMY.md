@@ -19,7 +19,7 @@ When a player is named **exactly "Jammy"**, they will:
 ## 🔐 Activation
 
 ### Trigger:
-- By default inactive, the feature is activated at any point by the "V" character in V X.Y in thge control panel
+- By default inactive, the feature is activated at any point by a mouse click of the "V" character indicating the version level in the control panel
 - When active the "V" changes from blue to red
 - Player name must be **exactly** `Jammy` (case-sensitive)
 - No spaces, no variations
