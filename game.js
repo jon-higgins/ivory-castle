@@ -155,7 +155,7 @@ const SOUNDS = {
     extraTurn: new Audio('extra-turn.mp3'),
     missTurn: new Audio('miss-turn.mp3'),
     archer: new Audio('Arrow.mp3'),
-    winner: new Audio('Winner.m4a')
+    winner: new Audio('Winner.mp3')
 };
 
 // Fallback: Create silent audio if files don't exist
@@ -1059,23 +1059,77 @@ function closeRulesModal() {
 }
 
 // Games Played Counter - Using CountAPI Replacement (mileshilliard.com)
-// 
+//
 // HOW IT WORKS:
 // - Free counting service (replacement for the defunct countapi.xyz)
 // - Key: "ivorycastle_games" is shared globally across ALL users
 // - The counter persists across browsers, devices, and sessions
 // - Works reliably on desktop, mobile, and incognito mode
+// - Fallback: If API fails, uses localStorage for local counting
 //
 // TROUBLESHOOTING:
 // - If you see "—": Service is temporarily unavailable
 // - Check browser console (F12) for detailed logs
 //
+
+const COUNTER_CONFIG = {
+    apiUrl: 'https://countapi.mileshilliard.com/api/v1',
+    apiKey: 'ivorycastle_games',
+    timeout: 5000,  // 5 second timeout
+    maxRetries: 2,  // Maximum retry attempts
+    fallbackKey: 'ivory_castle_local_counter'
+};
+
+// Fetch with timeout
+async function fetchWithTimeout(url, timeout = COUNTER_CONFIG.timeout) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        return response;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+            throw new Error('Request timeout');
+        }
+        throw error;
+    }
+}
+
+// Get local counter fallback
+function getLocalCounter() {
+    try {
+        const count = localStorage.getItem(COUNTER_CONFIG.fallbackKey);
+        return count ? parseInt(count) : 0;
+    } catch (error) {
+        console.warn('localStorage unavailable:', error.message);
+        return 0;
+    }
+}
+
+// Set local counter fallback
+function setLocalCounter(value) {
+    try {
+        localStorage.setItem(COUNTER_CONFIG.fallbackKey, value.toString());
+    } catch (error) {
+        console.warn('localStorage unavailable:', error.message);
+    }
+}
+
 async function initGamesCounter() {
     try {
-        // Get current count from the counter service
-        const response = await fetch('https://countapi.mileshilliard.com/api/v1/get/ivorycastle_games');
+        // Try to get current count from the counter service
+        const url = `${COUNTER_CONFIG.apiUrl}/get/${COUNTER_CONFIG.apiKey}`;
+        const response = await fetchWithTimeout(url);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
         const data = await response.json();
-        
+
         if (data.value !== undefined) {
             console.log('✓ Games counter initialized:', data.value);
             updateCounterDisplay(parseInt(data.value));
@@ -1085,27 +1139,52 @@ async function initGamesCounter() {
             updateCounterDisplay(0);
         }
     } catch (error) {
-        console.log('ℹ Counter will be initialized when first game starts');
-        updateCounterDisplay(0);
+        console.warn('⚠ Counter API unavailable:', error.message);
+        console.log('ℹ Using local counter fallback');
+        const localCount = getLocalCounter();
+        updateCounterDisplay(localCount);
     }
 }
 
 async function incrementGamesPlayed() {
-    try {
-        // Increment counter (auto-creates if doesn't exist)
-        const response = await fetch('https://countapi.mileshilliard.com/api/v1/hit/ivorycastle_games');
-        const data = await response.json();
-        
-        if (data.value !== undefined) {
-            console.log('✓ Games played:', data.value);
-            updateCounterDisplay(parseInt(data.value));
-        } else {
-            throw new Error('Invalid response from counter service');
+    let retries = 0;
+
+    while (retries <= COUNTER_CONFIG.maxRetries) {
+        try {
+            // Increment counter (auto-creates if doesn't exist)
+            const url = `${COUNTER_CONFIG.apiUrl}/hit/${COUNTER_CONFIG.apiKey}`;
+            const response = await fetchWithTimeout(url);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.value !== undefined) {
+                console.log('✓ Games played (global):', data.value);
+                updateCounterDisplay(parseInt(data.value));
+                return; // Success - exit function
+            } else {
+                throw new Error('Invalid response from counter service');
+            }
+        } catch (error) {
+            retries++;
+
+            if (retries <= COUNTER_CONFIG.maxRetries) {
+                console.warn(`⚠ Counter API attempt ${retries} failed, retrying...`);
+                // Wait before retry (exponential backoff: 500ms, 1000ms)
+                await new Promise(resolve => setTimeout(resolve, 500 * retries));
+            } else {
+                // All retries exhausted, use local fallback
+                console.error('❌ Counter API unavailable after retries:', error.message);
+                console.log('ℹ Using local counter fallback');
+                const localCount = getLocalCounter() + 1;
+                setLocalCounter(localCount);
+                updateCounterDisplay(`${localCount} (local)`);
+                return;
+            }
         }
-    } catch (error) {
-        console.error('❌ Counter service unavailable:', error.message);
-        // Show "—" to indicate counter service is unavailable
-        updateCounterDisplay('—');
     }
 }
 
