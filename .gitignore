@@ -1,0 +1,61 @@
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# Build artifacts
+dist/
+build/
+*.min.js
+*.min.css
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.log
+
+# Backup files
+*.bak
+*OLD.*
+*_old.*
+*.backup
+
+# Node modules (if added in future)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Test files
+coverage/
+.nyc_output/
+
+# Optional: Exclude large media files from commits
+# Uncomment if using external CDN for assets
+# *.mp3
+# *.m4a
+# *.png
+# *.jpg
+# *.jpeg
