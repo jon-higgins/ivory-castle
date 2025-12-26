@@ -69,6 +69,49 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* Counter Shape Variations */
+.player-counter.shape-circle {
+    border-radius: 50%;
+}
+
+.player-counter.shape-square {
+    border-radius: 5px;
+}
+
+.player-counter.shape-diamond {
+    border-radius: 5px;
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.player-counter.shape-star {
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+.player-counter.shape-heart {
+    clip-path: path('M20,35 Q20,25 30,25 Q40,25 40,35 L20,55 L0,35 Q0,25 10,25 Q20,25 20,35Z');
+    font-size: 16px;
+}
+
+.player-counter.shape-triangle {
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.player-counter.shape-hexagon {
+    clip-path: polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%);
+}
+
+.player-counter.shape-pentagon {
+    clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+
+.player-counter.shape-paw {
+    border-radius: 50%;
+}
+
+.player-counter.shape-rocket {
+    border-radius: 50%;
+}
+
 /* Resizer */
 #resizer {
     width: 8px;
@@ -147,12 +190,21 @@ h1 {
     display: none;
 }
 
-.mute-toggle .slider,
-.fast-sim-toggle .slider {
+.mute-toggle .slider {
     position: relative;
     width: 44px;
     height: 24px;
     background: #27ae60;
+    border-radius: 12px;
+    transition: background 0.3s;
+    flex-shrink: 0;
+}
+
+.fast-sim-toggle .slider {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: #bdc3c7;
     border-radius: 12px;
     transition: background 0.3s;
     flex-shrink: 0;
@@ -177,7 +229,7 @@ h1 {
 }
 
 .fast-sim-toggle input[type="checkbox"]:checked + .slider {
-    background: #f39c12;
+    background: #27ae60;
 }
 
 .mute-toggle input[type="checkbox"]:checked + .slider::before,
@@ -525,6 +577,26 @@ button:disabled {
 .player-input-group label {
     font-weight: 600;
     color: #2c3e50;
+}
+
+.shape-select {
+    padding: 8px;
+    border: 2px solid #bdc3c7;
+    border-radius: 5px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.shape-select:hover {
+    border-color: #3498db;
+}
+
+.shape-select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
 #confirmNames,

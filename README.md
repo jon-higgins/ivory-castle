@@ -100,6 +100,8 @@ ivory-castle/
 - `resizeImageMap()` - Scale clickable areas responsively
 
 ### Recent Improvements
+- ✅ Fast Simulator mode with auto-play (v1.8)
+- ✅ 10 unique counter shapes (Circle, Square, Diamond, Star, Heart, Triangle, Hexagon, Pentagon, Paw, Rocket) (v1.8)
 - ✅ Added animated step-by-step player movement (v1.6)
 - ✅ Optimized board image to WebP (86% size reduction)
 - ✅ Added footstep sound effects during movement
@@ -137,7 +139,10 @@ This is a family/friends project. Feel free to fork and customize for your own u
 
 See [docs/CHANGELOG.md](docs/CHANGELOG_v1.4.md) for detailed version history.
 
-**Current Version: 1.6**
+**Current Version: 1.8**
+- Fast Simulator mode with auto-play and short sound files
+- 10 unique counter shape options
+- Improved toggle UI clarity (Fast Sim toggle colors)
 - Animated player movement
 - WebP image optimization
 - Mobile performance improvements

@@ -398,6 +398,19 @@ function showPlayerNameModal() {
         div.innerHTML = `
             <label for="player${i+1}Name">Player ${i+1} Name:</label>
             <input type="text" id="player${i+1}Name" placeholder="Enter name" required>
+            <label for="player${i+1}Shape">Counter Shape:</label>
+            <select id="player${i+1}Shape" class="shape-select">
+                <option value="circle">● Circle</option>
+                <option value="square">■ Square</option>
+                <option value="diamond">◆ Diamond</option>
+                <option value="star">★ Star</option>
+                <option value="heart">♥ Heart</option>
+                <option value="triangle">▲ Triangle</option>
+                <option value="hexagon">⬡ Hexagon</option>
+                <option value="pentagon">⬠ Pentagon</option>
+                <option value="paw">🐾 Paw</option>
+                <option value="rocket">🚀 Rocket</option>
+            </select>
         `;
         modalInputs.appendChild(div);
     }
@@ -417,6 +430,7 @@ function confirmPlayerNames() {
     
     for (let i = 0; i < numPlayers; i++) {
         const name = document.getElementById(`player${i+1}Name`).value.trim();
+        const shape = document.getElementById(`player${i+1}Shape`).value;
         if (!name) {
             alert('Please enter all player names');
             return;
@@ -426,6 +440,7 @@ function confirmPlayerNames() {
             initial: name.charAt(0).toUpperCase(),
             position: 'start',
             color: PLAYER_COLORS[i],
+            shape: shape,
             waitingFor6: false,
             missNextTurn: false,
             hasArcherProtection: false,
@@ -927,9 +942,25 @@ function renderPlayerCounters() {
         // Calculate spacing for multiple players (scaled)
         playersAtPos.forEach(({player, index}, i) => {
             const counter = document.createElement('div');
-            counter.className = 'player-counter';
+            counter.className = `player-counter shape-${player.shape || 'circle'}`;
             counter.style.background = player.color;
-            counter.textContent = player.initial;
+
+            // For emoji shapes (paw, rocket), display emoji instead of initial
+            if (player.shape === 'paw') {
+                counter.textContent = '🐾';
+                counter.style.fontSize = '24px';
+            } else if (player.shape === 'rocket') {
+                counter.textContent = '🚀';
+                counter.style.fontSize = '24px';
+            } else if (player.shape === 'diamond') {
+                // For diamond, create inner div to counter-rotate the text
+                const innerDiv = document.createElement('div');
+                innerDiv.style.transform = 'rotate(-45deg)';
+                innerDiv.textContent = player.initial;
+                counter.appendChild(innerDiv);
+            } else {
+                counter.textContent = player.initial;
+            }
             
             // Offset players horizontally if multiple at same position
             let offsetX = 0;
