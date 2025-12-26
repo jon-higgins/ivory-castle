@@ -174,7 +174,17 @@ const SOUNDS = {
     missTurn: new Audio('miss-turn.mp3'),
     archer: new Audio('Arrow.mp3'),
     winner: new Audio('Winner.mp3'),
-    footstep: new Audio('footstep.mp3')
+    footstep: new Audio('footstep.mp3'),
+    // Fast simulator versions (0.3 seconds each)
+    diceRollFast: new Audio('dice-roll-fast.mp3'),
+    normalMoveFast: new Audio('move-fast.mp3'),
+    happyMoveFast: new Audio('happy-fast.mp3'),
+    sadMoveFast: new Audio('sad-fast.mp3'),
+    screamFast: new Audio('scream-fast.mp3'),
+    extraTurnFast: new Audio('extra-turn-fast.mp3'),
+    missTurnFast: new Audio('miss-turn-fast.mp3'),
+    archerFast: new Audio('Arrow-fast.mp3'),
+    footstepFast: new Audio('footstep-fast.mp3')
 };
 
 // Fallback: Create silent audio if files don't exist
@@ -1132,14 +1142,21 @@ function toggleEasterEgg() {
 function playSound(soundName) {
     if (gameState.soundMuted) return;
 
-    // In fast simulator mode, only play winner sound
+    // In fast simulator mode, use fast versions of sounds (except winner)
+    let actualSoundName = soundName;
     if (gameState.isSimulating && soundName !== 'winner') {
-        return;
+        // Convert to fast version (e.g., 'diceRoll' -> 'diceRollFast')
+        actualSoundName = soundName + 'Fast';
+
+        // If fast version doesn't exist, skip sound
+        if (!SOUNDS[actualSoundName]) {
+            return;
+        }
     }
 
     try {
-        SOUNDS[soundName].currentTime = 0;
-        SOUNDS[soundName].play().catch(e => debug.log('Sound play failed:', e));
+        SOUNDS[actualSoundName].currentTime = 0;
+        SOUNDS[actualSoundName].play().catch(e => debug.log('Sound play failed:', e));
     } catch (e) {
         debug.log('Sound error:', e);
     }
