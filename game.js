@@ -1,3 +1,19 @@
+// Debug utility - Set DEBUG to false for production
+const DEBUG = false; // Change to false to disable debug logging
+
+const debug = {
+    log: (...args) => {
+        if (DEBUG) console.log(...args);
+    },
+    warn: (...args) => {
+        if (DEBUG) console.warn(...args);
+    },
+    error: (...args) => {
+        // Always log errors
+        console.error(...args);
+    }
+};
+
 // Game State
 const gameState = {
     players: [],
@@ -162,7 +178,7 @@ const SOUNDS = {
 // Fallback: Create silent audio if files don't exist
 Object.keys(SOUNDS).forEach(key => {
     SOUNDS[key].addEventListener('error', function() {
-        console.log(`Sound file ${key} not found, using silent fallback`);
+        debug.log(`Sound file ${key} not found, using silent fallback`);
     });
 });
 
@@ -410,10 +426,10 @@ function confirmPlayerNames() {
             gameState.jammyRollCount = 0;
             if (gameState.easterEggEnabled) {
                 gameState.jammyMode = true;
-                console.log('🥚 EASTER EGG ACTIVATED! Jammy mode enabled.');
-                console.log('   Player name:', name);
-                console.log('   Player index:', i);
-                console.log('   Forced sequence:', gameState.jammyRollSequence);
+                debug.log('🥚 EASTER EGG ACTIVATED! Jammy mode enabled.');
+                debug.log('   Player name:', name);
+                debug.log('   Player index:', i);
+                debug.log('   Forced sequence:', gameState.jammyRollSequence);
             }
         }
     }
@@ -434,11 +450,11 @@ function startGame() {
     gameState.playerOrder = [...Array(gameState.players.length).keys()];
     shuffleArray(gameState.playerOrder);
     gameState.currentPlayerIndex = 0;
-    
-    console.log('Game started. Player order:', gameState.playerOrder);
+
+    debug.log('Game started. Player order:', gameState.playerOrder);
     if (gameState.jammyMode) {
-        console.log('🥚 Jammy is at player index:', gameState.jammyPlayerIndex);
-        console.log('🥚 Jammy will play at turn position:', gameState.playerOrder.indexOf(gameState.jammyPlayerIndex));
+        debug.log('🥚 Jammy is at player index:', gameState.jammyPlayerIndex);
+        debug.log('🥚 Jammy will play at turn position:', gameState.playerOrder.indexOf(gameState.jammyPlayerIndex));
     }
     
     // Hide setup, show game
@@ -621,8 +637,8 @@ async function rollDice() {
     
     const playerIndex = gameState.playerOrder[gameState.currentPlayerIndex];
     const player = gameState.players[playerIndex];
-    
-    console.log('Roll dice - Current player:', player.name, '(index:', playerIndex + ')');
+
+    debug.log('Roll dice - Current player:', player.name, '(index:', playerIndex + ')');
     
     // Check if player must miss this turn
     if (player.missNextTurn) {
@@ -646,18 +662,18 @@ async function rollDice() {
     let roll;
     
     // Silent Easter egg: Force optimal sequence for Jammy
-    if (gameState.jammyMode && 
-        playerIndex === gameState.jammyPlayerIndex && 
+    if (gameState.jammyMode &&
+        playerIndex === gameState.jammyPlayerIndex &&
         gameState.jammyRollCount < gameState.jammyRollSequence.length) {
-        
+
         roll = gameState.jammyRollSequence[gameState.jammyRollCount];
-        console.log('🥚 JAMMY FORCED ROLL #' + (gameState.jammyRollCount + 1) + ':', roll);
-        console.log('   (Normal random would have been:', Math.floor(Math.random() * 6) + 1 + ')');
+        debug.log('🥚 JAMMY FORCED ROLL #' + (gameState.jammyRollCount + 1) + ':', roll);
+        debug.log('   (Normal random would have been:', Math.floor(Math.random() * 6) + 1 + ')');
         gameState.jammyRollCount++;
     } else {
         roll = Math.floor(Math.random() * 6) + 1;
         if (gameState.jammyMode && playerIndex === gameState.jammyPlayerIndex) {
-            console.log('🥚 Jammy sequence exhausted, using random roll:', roll);
+            debug.log('🥚 Jammy sequence exhausted, using random roll:', roll);
         }
     }
     
@@ -698,8 +714,8 @@ async function movePlayer(playerIndex, spaces) {
     
     let currentPos = player.position === 'start' ? 0 : player.position;
     let newPos = currentPos + spaces;
-    
-    console.log(`${player.name} moving from ${currentPos} by ${spaces} spaces to ${newPos}`);
+
+    debug.log(`${player.name} moving from ${currentPos} by ${spaces} spaces to ${newPos}`);
     
     // Check if exceeds 63
     if (newPos > 63) {
@@ -722,7 +738,7 @@ async function movePlayer(playerIndex, spaces) {
     
     // Check for win
     if (newPos === 63) {
-        console.log('🎉 WINNER:', player.name);
+        debug.log('🎉 WINNER:', player.name);
         playSound('winner');
         showWinner(playerIndex);
         return;
@@ -750,17 +766,17 @@ async function processSpecialSpace(playerIndex, position) {
     // Check move_forward
     if (RULES.move_forward[position]) {
         const move = RULES.move_forward[position];
-        console.log(`Forward jump from ${position} to ${move.to}`);
+        debug.log(`Forward jump from ${position} to ${move.to}`);
         showMessage(move.text, "happy");
         playSound('happyMove');
         addToJourney(playerIndex, `Jumped forward to ${move.to}`);
 
         // Animate the forward movement
         await animatePlayerMovement(playerIndex, position, move.to);
-        
+
         if (move.to === 63) {
             await sleep(1500);
-            console.log('🎉 WINNER:', player.name);
+            debug.log('🎉 WINNER:', player.name);
             playSound('winner');
             showWinner(playerIndex);
             return;
@@ -975,10 +991,10 @@ function hideMessage() {
 function showWinner(playerIndex) {
     const player = gameState.players[playerIndex];
     if (gameState.jammyMode && playerIndex === gameState.jammyPlayerIndex) {
-        console.log('🥚 Jammy won using the easter egg! 🎉');
-        console.log('   Total forced rolls used:', gameState.jammyRollCount);
+        debug.log('🥚 Jammy won using the easter egg! 🎉');
+        debug.log('   Total forced rolls used:', gameState.jammyRollCount);
     }
-    document.getElementById('winnerMessage').textContent = 
+    document.getElementById('winnerMessage').textContent =
         `${player.name} has reached the Ivory Castle and won the game! 🏰`;
     document.getElementById('winnerModal').classList.add('show');
 }
@@ -1028,12 +1044,12 @@ function toggleEasterEgg() {
 
 function playSound(soundName) {
     if (gameState.soundMuted) return;
-    
+
     try {
         SOUNDS[soundName].currentTime = 0;
-        SOUNDS[soundName].play().catch(e => console.log('Sound play failed:', e));
+        SOUNDS[soundName].play().catch(e => debug.log('Sound play failed:', e));
     } catch (e) {
-        console.log('Sound error:', e);
+        debug.log('Sound error:', e);
     }
 }
 
@@ -1153,7 +1169,7 @@ function getLocalCounter() {
         const count = localStorage.getItem(COUNTER_CONFIG.fallbackKey);
         return count ? parseInt(count) : 0;
     } catch (error) {
-        console.warn('localStorage unavailable:', error.message);
+        debug.warn('localStorage unavailable:', error.message);
         return 0;
     }
 }
@@ -1163,7 +1179,7 @@ function setLocalCounter(value) {
     try {
         localStorage.setItem(COUNTER_CONFIG.fallbackKey, value.toString());
     } catch (error) {
-        console.warn('localStorage unavailable:', error.message);
+        debug.warn('localStorage unavailable:', error.message);
     }
 }
 
@@ -1180,16 +1196,16 @@ async function initGamesCounter() {
         const data = await response.json();
 
         if (data.value !== undefined) {
-            console.log('✓ Games counter initialized:', data.value);
+            debug.log('✓ Games counter initialized:', data.value);
             updateCounterDisplay(parseInt(data.value));
         } else {
             // Key doesn't exist yet
-            console.log('ℹ Counter will be initialized on first game start');
+            debug.log('ℹ Counter will be initialized on first game start');
             updateCounterDisplay(0);
         }
     } catch (error) {
-        console.warn('⚠ Counter API unavailable:', error.message);
-        console.log('ℹ Using local counter fallback');
+        debug.warn('⚠ Counter API unavailable:', error.message);
+        debug.log('ℹ Using local counter fallback');
         const localCount = getLocalCounter();
         updateCounterDisplay(localCount);
     }
@@ -1211,7 +1227,7 @@ async function incrementGamesPlayed() {
             const data = await response.json();
 
             if (data.value !== undefined) {
-                console.log('✓ Games played (global):', data.value);
+                debug.log('✓ Games played (global):', data.value);
                 updateCounterDisplay(parseInt(data.value));
                 return; // Success - exit function
             } else {
@@ -1221,13 +1237,13 @@ async function incrementGamesPlayed() {
             retries++;
 
             if (retries <= COUNTER_CONFIG.maxRetries) {
-                console.warn(`⚠ Counter API attempt ${retries} failed, retrying...`);
+                debug.warn(`⚠ Counter API attempt ${retries} failed, retrying...`);
                 // Wait before retry (exponential backoff: 500ms, 1000ms)
                 await new Promise(resolve => setTimeout(resolve, 500 * retries));
             } else {
                 // All retries exhausted, use local fallback
-                console.error('❌ Counter API unavailable after retries:', error.message);
-                console.log('ℹ Using local counter fallback');
+                debug.error('❌ Counter API unavailable after retries:', error.message);
+                debug.log('ℹ Using local counter fallback');
                 const localCount = getLocalCounter() + 1;
                 setLocalCounter(localCount);
                 updateCounterDisplay(`${localCount} (local)`);
@@ -1239,7 +1255,7 @@ async function incrementGamesPlayed() {
 
 function updateCounterDisplay(count) {
     const counterValue = document.getElementById('counterValue');
-    console.log('Display counter:', count);
+    debug.log('Display counter:', count);
     if (counterValue) {
         counterValue.textContent = count;
         // Trigger animation by adding class (only for numbers)
