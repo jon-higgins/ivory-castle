@@ -107,59 +107,63 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 20px;
     padding: 12px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex-wrap: wrap;
 }
 
 .control-btn {
-    padding: 10px 16px;
+    padding: 8px 12px;
     background: #e74c3c;
     color: white;
     border: none;
     border-radius: 5px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: background 0.3s;
-    flex: 1;
+    white-space: nowrap;
 }
 
 .control-btn:hover {
     background: #c0392b;
 }
 
-/* Mute Toggle Switch */
-.mute-toggle {
+/* Toggle Switches */
+.mute-toggle, .fast-sim-toggle {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     cursor: pointer;
-    flex: 1;
-    justify-content: flex-end;
+    white-space: nowrap;
 }
 
-.mute-toggle input[type="checkbox"] {
+.mute-toggle input[type="checkbox"],
+.fast-sim-toggle input[type="checkbox"] {
     display: none;
 }
 
-.mute-toggle .slider {
+.mute-toggle .slider,
+.fast-sim-toggle .slider {
     position: relative;
-    width: 50px;
-    height: 26px;
+    width: 44px;
+    height: 24px;
     background: #27ae60;
-    border-radius: 13px;
+    border-radius: 12px;
     transition: background 0.3s;
+    flex-shrink: 0;
 }
 
-.mute-toggle .slider::before {
+.mute-toggle .slider::before,
+.fast-sim-toggle .slider::before {
     content: '';
     position: absolute;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background: white;
     top: 3px;
@@ -172,8 +176,13 @@ h1 {
     background: #95a5a6;
 }
 
-.mute-toggle input[type="checkbox"]:checked + .slider::before {
-    transform: translateX(24px);
+.fast-sim-toggle input[type="checkbox"]:checked + .slider {
+    background: #f39c12;
+}
+
+.mute-toggle input[type="checkbox"]:checked + .slider::before,
+.fast-sim-toggle input[type="checkbox"]:checked + .slider::before {
+    transform: translateX(20px);
 }
 
 .mute-toggle input[type="checkbox"]:checked ~ .mute-label {
@@ -181,12 +190,17 @@ h1 {
     opacity: 0.6;
 }
 
-.mute-label {
-    font-size: 14px;
+.mute-label, .toggle-label {
+    font-size: 12px;
     font-weight: 600;
     color: #2c3e50;
     user-select: none;
     transition: opacity 0.3s;
+}
+
+/* Hide fast sim toggle when game started */
+.fast-sim-toggle.hidden {
+    display: none;
 }
 
 h2 {

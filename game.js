@@ -22,6 +22,8 @@ const gameState = {
     waitingForRoll: true,
     playerOrder: [],
     soundMuted: false,
+    fastSimulatorMode: false,
+    isSimulating: false,
     easterEggEnabled: false,
     jammyMode: false,
     jammyPlayerIndex: -1,
@@ -193,17 +195,18 @@ function setupEventListeners() {
     document.getElementById('numPlayers').addEventListener('change', updateNumPlayersInput);
     document.getElementById('startGame').addEventListener('click', showPlayerNameModal);
     document.getElementById('confirmNames').addEventListener('click', confirmPlayerNames);
-    document.getElementById('rollDiceBtn').addEventListener('click', rollDice);
+    document.getElementById('rollDiceBtn').addEventListener('click', handleRollOrSimulate);
     document.getElementById('newGame').addEventListener('click', resetGame);
     document.getElementById('restartGameBtn').addEventListener('click', confirmRestart);
     document.getElementById('muteToggle').addEventListener('change', toggleMute);
+    document.getElementById('fastSimToggle').addEventListener('change', toggleFastSimulator);
     document.getElementById('rulesLink').addEventListener('click', showRulesModal);
     document.getElementById('closeRulesBtn').addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
         closeRulesModal();
     });
-    
+
     // Easter egg toggle
     document.getElementById('easterEggToggle').addEventListener('click', toggleEasterEgg);
     
@@ -445,7 +448,13 @@ function confirmPlayerNames() {
 
 function startGame() {
     gameState.gameStarted = true;
-    
+
+    // Hide fast simulator toggle when game starts
+    const fastSimToggle = document.getElementById('fastSimToggleContainer');
+    if (fastSimToggle) {
+        fastSimToggle.classList.add('hidden');
+    }
+
     // Randomize player order
     gameState.playerOrder = [...Array(gameState.players.length).keys()];
     shuffleArray(gameState.playerOrder);
@@ -456,7 +465,7 @@ function startGame() {
         debug.log('🥚 Jammy is at player index:', gameState.jammyPlayerIndex);
         debug.log('🥚 Jammy will play at turn position:', gameState.playerOrder.indexOf(gameState.jammyPlayerIndex));
     }
-    
+
     // Hide setup, show game
     document.getElementById('setupArea').style.display = 'none';
     const gameArea = document.getElementById('gameArea');
@@ -507,13 +516,21 @@ function startGame() {
     
     // Update current player
     updateCurrentPlayer();
-    
+
     // Set initial dice display
     showInitialDice();
-    
+
+    // Update button text (should be "Roll Dice" or "Simulating..." if simulator is active)
+    updateRollButtonText();
+
     // Auto-collapse on mobile
     if (gameState.autoCollapsePanel) {
         gameState.autoCollapsePanel();
+    }
+
+    // If fast simulator mode is on, start the simulation immediately
+    if (gameState.fastSimulatorMode) {
+        setTimeout(() => runFastSimulator(), 1000);
     }
 }
 
@@ -1016,7 +1033,7 @@ function confirmRestart() {
 function toggleMute() {
     const muteToggle = document.getElementById('muteToggle');
     gameState.soundMuted = muteToggle.checked;
-    
+
     // Update label text
     const label = document.querySelector('.mute-label');
     if (gameState.soundMuted) {
@@ -1024,6 +1041,76 @@ function toggleMute() {
     } else {
         label.textContent = '🔊 Sound';
     }
+}
+
+function toggleFastSimulator() {
+    const fastSimToggle = document.getElementById('fastSimToggle');
+    gameState.fastSimulatorMode = fastSimToggle.checked;
+
+    // Update roll button text if game hasn't started yet
+    if (!gameState.gameStarted) {
+        updateRollButtonText();
+    }
+}
+
+function updateRollButtonText() {
+    const rollBtn = document.getElementById('rollDiceBtn');
+    if (gameState.fastSimulatorMode && !gameState.gameStarted) {
+        rollBtn.textContent = 'Start Fast Simulator';
+    } else {
+        rollBtn.textContent = 'Roll Dice';
+    }
+}
+
+function handleRollOrSimulate() {
+    if (gameState.fastSimulatorMode && !gameState.isSimulating) {
+        runFastSimulator();
+    } else {
+        rollDice();
+    }
+}
+
+async function runFastSimulator() {
+    if (gameState.isSimulating) return;
+
+    gameState.isSimulating = true;
+    debug.log('🎲 Fast Simulator Started');
+
+    // Disable the roll button during simulation
+    const rollBtn = document.getElementById('rollDiceBtn');
+    rollBtn.disabled = true;
+    rollBtn.textContent = 'Simulating...';
+
+    // Run the game automatically until someone wins
+    let gameOver = false;
+    let turnCount = 0;
+    const maxTurns = 1000; // Safety limit to prevent infinite loops
+
+    while (!gameOver && turnCount < maxTurns) {
+        turnCount++;
+
+        // Check if any player has won
+        const winner = gameState.players.find(p => p.position === 63);
+        if (winner) {
+            gameOver = true;
+            break;
+        }
+
+        // Simulate one turn
+        await rollDice();
+
+        // Small delay between turns (0.5 seconds per action as requested)
+        await sleep(500);
+
+        // Check again for winner after the turn completes
+        const winnerAfterTurn = gameState.players.find(p => p.position === 63);
+        if (winnerAfterTurn) {
+            gameOver = true;
+        }
+    }
+
+    gameState.isSimulating = false;
+    debug.log('🎲 Fast Simulator Completed after', turnCount, 'turns');
 }
 
 function toggleEasterEgg() {
@@ -1045,6 +1132,11 @@ function toggleEasterEgg() {
 function playSound(soundName) {
     if (gameState.soundMuted) return;
 
+    // In fast simulator mode, only play winner sound
+    if (gameState.isSimulating && soundName !== 'winner') {
+        return;
+    }
+
     try {
         SOUNDS[soundName].currentTime = 0;
         SOUNDS[soundName].play().catch(e => debug.log('Sound play failed:', e));
@@ -1054,6 +1146,12 @@ function playSound(soundName) {
 }
 
 function sleep(ms) {
+    // In fast simulator mode, use much shorter delays
+    if (gameState.isSimulating) {
+        // Use 1/10th of normal time, minimum 50ms
+        const fastMs = Math.max(50, ms / 10);
+        return new Promise(resolve => setTimeout(resolve, fastMs));
+    }
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
