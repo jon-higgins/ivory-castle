@@ -405,11 +405,11 @@ function showPlayerNameModal() {
                 <option value="diamond">◆ Diamond</option>
                 <option value="star">★ Star</option>
                 <option value="heart">♥ Heart</option>
-                <option value="triangle">▲ Triangle</option>
-                <option value="hexagon">⬡ Hexagon</option>
-                <option value="pentagon">⬠ Pentagon</option>
                 <option value="paw">🐾 Paw</option>
                 <option value="rocket">🚀 Rocket</option>
+                <option value="crown">👑 Crown</option>
+                <option value="sparkle">🌟 Sparkle</option>
+                <option value="butterfly">🦋 Butterfly</option>
             </select>
         `;
         modalInputs.appendChild(div);
@@ -945,12 +945,21 @@ function renderPlayerCounters() {
             counter.className = `player-counter shape-${player.shape || 'circle'}`;
             counter.style.background = player.color;
 
-            // For emoji shapes (paw, rocket), display emoji instead of initial
+            // For emoji shapes, display emoji instead of initial
             if (player.shape === 'paw') {
                 counter.textContent = '🐾';
                 counter.style.fontSize = '24px';
             } else if (player.shape === 'rocket') {
                 counter.textContent = '🚀';
+                counter.style.fontSize = '24px';
+            } else if (player.shape === 'crown') {
+                counter.textContent = '👑';
+                counter.style.fontSize = '24px';
+            } else if (player.shape === 'sparkle') {
+                counter.textContent = '🌟';
+                counter.style.fontSize = '24px';
+            } else if (player.shape === 'butterfly') {
+                counter.textContent = '🦋';
                 counter.style.fontSize = '24px';
             } else if (player.shape === 'diamond') {
                 // For diamond, create inner div to counter-rotate the text

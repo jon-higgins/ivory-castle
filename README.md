@@ -101,7 +101,7 @@ ivory-castle/
 
 ### Recent Improvements
 - ✅ Fast Simulator mode with auto-play (v1.8)
-- ✅ 10 unique counter shapes (Circle, Square, Diamond, Star, Heart, Triangle, Hexagon, Pentagon, Paw, Rocket) (v1.8)
+- ✅ 10 unique counter shapes - 5 geometric (Circle, Square, Diamond, Star, Heart) + 5 fun (Paw, Rocket, Crown, Sparkle, Butterfly) (v1.8)
 - ✅ Added animated step-by-step player movement (v1.6)
 - ✅ Optimized board image to WebP (86% size reduction)
 - ✅ Added footstep sound effects during movement

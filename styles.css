@@ -92,23 +92,11 @@ body {
     font-size: 16px;
 }
 
-.player-counter.shape-triangle {
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-}
-
-.player-counter.shape-hexagon {
-    clip-path: polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%);
-}
-
-.player-counter.shape-pentagon {
-    clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-}
-
-.player-counter.shape-paw {
-    border-radius: 50%;
-}
-
-.player-counter.shape-rocket {
+.player-counter.shape-paw,
+.player-counter.shape-rocket,
+.player-counter.shape-crown,
+.player-counter.shape-sparkle,
+.player-counter.shape-butterfly {
     border-radius: 50%;
 }
 
