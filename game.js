@@ -554,7 +554,7 @@ function startGame() {
     }
 
     // If fast simulator mode is on, start the simulation immediately
-    if (gameState.fastSimulatorMode) {
+    if (gameState.fastSimulatorMode !== 'off') {
         setTimeout(() => runFastSimulator(), 1000);
     }
 }
