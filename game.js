@@ -1156,14 +1156,14 @@ async function runFastSimulator() {
         // Disable the roll button during simulation
         const rollBtn = document.getElementById('rollDiceBtn');
         rollBtn.disabled = true;
-        rollBtn.textContent = `Simulating (${gameState.fastSimulatorMode})...`;
+        rollBtn.textContent = 'Simulating...';
 
         // Run the game automatically until someone wins
         let gameOver = false;
         let turnCount = 0;
         const maxTurns = 1000; // Safety limit to prevent infinite loops
 
-        while (!gameOver && turnCount < maxTurns) {
+        while (!gameOver && turnCount < maxTurns && gameState.fastSimulatorMode !== 'off') {
             turnCount++;
 
             // Check if any player has won
