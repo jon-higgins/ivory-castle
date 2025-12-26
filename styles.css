@@ -165,7 +165,7 @@ h1 {
 }
 
 /* Toggle Switches */
-.mute-toggle, .fast-sim-toggle {
+.mute-toggle {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -173,8 +173,7 @@ h1 {
     white-space: nowrap;
 }
 
-.mute-toggle input[type="checkbox"],
-.fast-sim-toggle input[type="checkbox"] {
+.mute-toggle input[type="checkbox"] {
     display: none;
 }
 
@@ -188,18 +187,42 @@ h1 {
     flex-shrink: 0;
 }
 
-.fast-sim-toggle .slider {
-    position: relative;
-    width: 44px;
-    height: 24px;
-    background: #bdc3c7;
-    border-radius: 12px;
-    transition: background 0.3s;
-    flex-shrink: 0;
+/* Fast Sim Control */
+.fast-sim-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
 }
 
-.mute-toggle .slider::before,
-.fast-sim-toggle .slider::before {
+.fast-sim-control label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.fast-sim-select {
+    padding: 4px 8px;
+    border: 2px solid #3498db;
+    border-radius: 5px;
+    background: white;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.fast-sim-select:hover {
+    background: #ecf0f1;
+}
+
+.fast-sim-select:focus {
+    outline: none;
+    border-color: #2980b9;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.mute-toggle .slider::before {
     content: '';
     position: absolute;
     width: 18px;
@@ -216,12 +239,7 @@ h1 {
     background: #95a5a6;
 }
 
-.fast-sim-toggle input[type="checkbox"]:checked + .slider {
-    background: #27ae60;
-}
-
-.mute-toggle input[type="checkbox"]:checked + .slider::before,
-.fast-sim-toggle input[type="checkbox"]:checked + .slider::before {
+.mute-toggle input[type="checkbox"]:checked + .slider::before {
     transform: translateX(20px);
 }
 
@@ -239,7 +257,7 @@ h1 {
 }
 
 /* Hide fast sim toggle when game started */
-.fast-sim-toggle.hidden {
+.fast-sim-control.hidden {
     display: none;
 }
 

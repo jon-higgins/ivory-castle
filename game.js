@@ -22,7 +22,7 @@ const gameState = {
     waitingForRoll: true,
     playerOrder: [],
     soundMuted: false,
-    fastSimulatorMode: false,
+    fastSimulatorMode: 'off', // 'off', '1x', or '2x'
     isSimulating: false,
     easterEggEnabled: false,
     jammyMode: false,
@@ -1121,7 +1121,7 @@ function toggleMute() {
 
 function toggleFastSimulator() {
     const fastSimToggle = document.getElementById('fastSimToggle');
-    gameState.fastSimulatorMode = fastSimToggle.checked;
+    gameState.fastSimulatorMode = fastSimToggle.value; // Now stores 'off', '1x', or '2x'
 
     // Update roll button text if game hasn't started yet
     if (!gameState.gameStarted) {
@@ -1131,15 +1131,15 @@ function toggleFastSimulator() {
 
 function updateRollButtonText() {
     const rollBtn = document.getElementById('rollDiceBtn');
-    if (gameState.fastSimulatorMode && !gameState.gameStarted) {
-        rollBtn.textContent = 'Start Fast Simulator';
+    if (gameState.fastSimulatorMode !== 'off' && !gameState.gameStarted) {
+        rollBtn.textContent = `Start Fast Sim (${gameState.fastSimulatorMode})`;
     } else {
         rollBtn.textContent = 'Roll Dice';
     }
 }
 
 function handleRollOrSimulate() {
-    if (gameState.fastSimulatorMode && !gameState.isSimulating) {
+    if (gameState.fastSimulatorMode !== 'off' && !gameState.isSimulating) {
         runFastSimulator();
     } else {
         rollDice();
@@ -1151,12 +1151,12 @@ async function runFastSimulator() {
 
     try {
         gameState.isSimulating = true;
-        debug.log('🎲 Fast Simulator Started');
+        debug.log(`🎲 Fast Simulator Started (${gameState.fastSimulatorMode})`);
 
         // Disable the roll button during simulation
         const rollBtn = document.getElementById('rollDiceBtn');
         rollBtn.disabled = true;
-        rollBtn.textContent = 'Simulating...';
+        rollBtn.textContent = `Simulating (${gameState.fastSimulatorMode})...`;
 
         // Run the game automatically until someone wins
         let gameOver = false;
@@ -1237,10 +1237,18 @@ function playSound(soundName) {
 }
 
 function sleep(ms) {
-    // In fast simulator mode, use much shorter delays
+    // In fast simulator mode, use shorter delays based on speed setting
     if (gameState.isSimulating) {
-        // Use 1/10th of normal time, minimum 50ms
-        const fastMs = Math.max(50, ms / 10);
+        let fastMs;
+        if (gameState.fastSimulatorMode === '1x') {
+            // 1x speed: Use 1/5th of normal time, minimum 100ms (slower)
+            fastMs = Math.max(100, ms / 5);
+        } else if (gameState.fastSimulatorMode === '2x') {
+            // 2x speed: Use 1/10th of normal time, minimum 50ms (faster)
+            fastMs = Math.max(50, ms / 10);
+        } else {
+            fastMs = ms; // Fallback to normal speed
+        }
         return new Promise(resolve => setTimeout(resolve, fastMs));
     }
     return new Promise(resolve => setTimeout(resolve, ms));

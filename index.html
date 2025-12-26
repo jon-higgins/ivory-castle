@@ -97,11 +97,14 @@
             
             <div id="gameControls">
                 <button id="restartGameBtn" class="control-btn">🔄 Restart</button>
-                <label class="fast-sim-toggle" id="fastSimToggleContainer">
-                    <input type="checkbox" id="fastSimToggle">
-                    <span class="slider"></span>
-                    <span class="toggle-label">⚡ Fast Sim</span>
-                </label>
+                <div class="fast-sim-control" id="fastSimToggleContainer">
+                    <label for="fastSimToggle">⚡ Fast Sim:</label>
+                    <select id="fastSimToggle" class="fast-sim-select">
+                        <option value="off">Off</option>
+                        <option value="1x">1x</option>
+                        <option value="2x">2x</option>
+                    </select>
+                </div>
                 <label class="mute-toggle">
                     <input type="checkbox" id="muteToggle">
                     <span class="slider"></span>
