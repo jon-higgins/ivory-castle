@@ -473,6 +473,12 @@ button:disabled {
     box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
+.player-shape-indicator {
+    margin-left: 4px;
+    font-size: 16px;
+    opacity: 0.7;
+}
+
 .player-position {
     font-size: 14px;
     color: #7f8c8d;
