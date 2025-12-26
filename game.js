@@ -587,20 +587,39 @@ function shuffleArray(array) {
     }
 }
 
+function getShapeSymbol(shape) {
+    const shapeSymbols = {
+        'circle': '●',
+        'square': '■',
+        'diamond': '◆',
+        'star': '★',
+        'heart': '♥',
+        'paw': '🐾',
+        'rocket': '🚀',
+        'crown': '👑',
+        'sparkle': '🌟',
+        'butterfly': '🦋'
+    };
+    return shapeSymbols[shape] || '●';
+}
+
 function createPlayerCards() {
     const container = document.getElementById('playersInfo');
     container.innerHTML = '';
-    
+
     gameState.players.forEach((player, index) => {
         const card = document.createElement('div');
         card.className = 'player-card';
         card.id = `player-card-${index}`;
-        
+
+        const shapeSymbol = getShapeSymbol(player.shape || 'circle');
+
         card.innerHTML = `
             <div class="player-header">
                 <div class="player-name">
                     <div class="player-color-indicator" style="background: ${player.color}"></div>
                     ${player.name}
+                    <span class="player-shape-indicator">${shapeSymbol}</span>
                 </div>
                 <div class="player-position">Start</div>
             </div>
@@ -612,7 +631,7 @@ function createPlayerCards() {
                 </div>
             </div>
         `;
-        
+
         container.appendChild(card);
     });
 }
