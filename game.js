@@ -673,82 +673,89 @@ function updatePlayerStatus(playerIndex) {
 
 async function rollDice() {
     if (!gameState.waitingForRoll) return;
-    
-    gameState.waitingForRoll = false;
-    document.getElementById('rollDiceBtn').disabled = true;
-    
-    const playerIndex = gameState.playerOrder[gameState.currentPlayerIndex];
-    const player = gameState.players[playerIndex];
 
-    debug.log('Roll dice - Current player:', player.name, '(index:', playerIndex + ')');
-    
-    // Check if player must miss this turn
-    if (player.missNextTurn) {
-        player.missNextTurn = false;
-        showMessage("You miss this turn!", "sad");
-        playSound('missTurn');
-        addToJourney(playerIndex, "Missed turn");
-        
-        await sleep(2000);
-        nextPlayer();
-        return;
-    }
-    
-    // Animate dice
-    const diceDisplay = document.getElementById('diceDisplay');
-    diceDisplay.classList.add('dice-rolling');
-    playSound('diceRoll');
-    
-    // Roll die
-    await sleep(500);
-    let roll;
-    
-    // Silent Easter egg: Force optimal sequence for Jammy
-    if (gameState.jammyMode &&
-        playerIndex === gameState.jammyPlayerIndex &&
-        gameState.jammyRollCount < gameState.jammyRollSequence.length) {
+    try {
+        gameState.waitingForRoll = false;
+        document.getElementById('rollDiceBtn').disabled = true;
 
-        roll = gameState.jammyRollSequence[gameState.jammyRollCount];
-        debug.log('🥚 JAMMY FORCED ROLL #' + (gameState.jammyRollCount + 1) + ':', roll);
-        debug.log('   (Normal random would have been:', Math.floor(Math.random() * 6) + 1 + ')');
-        gameState.jammyRollCount++;
-    } else {
-        roll = Math.floor(Math.random() * 6) + 1;
-        if (gameState.jammyMode && playerIndex === gameState.jammyPlayerIndex) {
-            debug.log('🥚 Jammy sequence exhausted, using random roll:', roll);
+        const playerIndex = gameState.playerOrder[gameState.currentPlayerIndex];
+        const player = gameState.players[playerIndex];
+
+        debug.log('Roll dice - Current player:', player.name, '(index:', playerIndex + ')');
+
+        // Check if player must miss this turn
+        if (player.missNextTurn) {
+            player.missNextTurn = false;
+            showMessage("You miss this turn!", "sad");
+            playSound('missTurn');
+            addToJourney(playerIndex, "Missed turn");
+
+            await sleep(2000);
+            nextPlayer();
+            return;
         }
-    }
-    
-    // Show dice with dots
-    diceDisplay.classList.remove('dice-rolling');
-    showDice(roll);
-    
-    await sleep(800);
-    
-    // Auto-collapse panel on mobile after showing result
-    if (gameState.autoCollapsePanel) {
-        gameState.autoCollapsePanel();
-    }
-    
-    // Check if waiting for 6
-    if (player.waitingFor6) {
-        if (roll === 6) {
-            player.waitingFor6 = false;
-            showMessage(`You rolled a 6! You can move now!`, "happy");
-            playSound('happyMove');
-            addToJourney(playerIndex, `Rolled ${roll} - Released!`);
+
+        // Animate dice
+        const diceDisplay = document.getElementById('diceDisplay');
+        diceDisplay.classList.add('dice-rolling');
+        playSound('diceRoll');
+
+        // Roll die
+        await sleep(500);
+        let roll;
+
+        // Silent Easter egg: Force optimal sequence for Jammy
+        if (gameState.jammyMode &&
+            playerIndex === gameState.jammyPlayerIndex &&
+            gameState.jammyRollCount < gameState.jammyRollSequence.length) {
+
+            roll = gameState.jammyRollSequence[gameState.jammyRollCount];
+            debug.log('🥚 JAMMY FORCED ROLL #' + (gameState.jammyRollCount + 1) + ':', roll);
+            debug.log('   (Normal random would have been:', Math.floor(Math.random() * 6) + 1 + ')');
+            gameState.jammyRollCount++;
         } else {
-            showMessage(`You rolled ${roll}. Still waiting for a 6...`, "sad");
-            playSound('sadMove');
-            addToJourney(playerIndex, `Rolled ${roll} - Still waiting`);
+            roll = Math.floor(Math.random() * 6) + 1;
+            if (gameState.jammyMode && playerIndex === gameState.jammyPlayerIndex) {
+                debug.log('🥚 Jammy sequence exhausted, using random roll:', roll);
+            }
         }
-        await sleep(2000);
-        nextPlayer();
-        return;
+
+        // Show dice with dots
+        diceDisplay.classList.remove('dice-rolling');
+        showDice(roll);
+
+        await sleep(800);
+
+        // Auto-collapse panel on mobile after showing result
+        if (gameState.autoCollapsePanel) {
+            gameState.autoCollapsePanel();
+        }
+
+        // Check if waiting for 6
+        if (player.waitingFor6) {
+            if (roll === 6) {
+                player.waitingFor6 = false;
+                showMessage(`You rolled a 6! You can move now!`, "happy");
+                playSound('happyMove');
+                addToJourney(playerIndex, `Rolled ${roll} - Released!`);
+            } else {
+                showMessage(`You rolled ${roll}. Still waiting for a 6...`, "sad");
+                playSound('sadMove');
+                addToJourney(playerIndex, `Rolled ${roll} - Still waiting`);
+            }
+            await sleep(2000);
+            nextPlayer();
+            return;
+        }
+
+        // Move player
+        await movePlayer(playerIndex, roll);
+    } catch (error) {
+        debug.error('Error in rollDice:', error);
+        showMessage('An error occurred. Please try again.', 'neutral');
+        gameState.waitingForRoll = true;
+        document.getElementById('rollDiceBtn').disabled = false;
     }
-    
-    // Move player
-    await movePlayer(playerIndex, roll);
 }
 
 async function movePlayer(playerIndex, spaces) {
@@ -1123,44 +1130,52 @@ function handleRollOrSimulate() {
 async function runFastSimulator() {
     if (gameState.isSimulating) return;
 
-    gameState.isSimulating = true;
-    debug.log('🎲 Fast Simulator Started');
+    try {
+        gameState.isSimulating = true;
+        debug.log('🎲 Fast Simulator Started');
 
-    // Disable the roll button during simulation
-    const rollBtn = document.getElementById('rollDiceBtn');
-    rollBtn.disabled = true;
-    rollBtn.textContent = 'Simulating...';
+        // Disable the roll button during simulation
+        const rollBtn = document.getElementById('rollDiceBtn');
+        rollBtn.disabled = true;
+        rollBtn.textContent = 'Simulating...';
 
-    // Run the game automatically until someone wins
-    let gameOver = false;
-    let turnCount = 0;
-    const maxTurns = 1000; // Safety limit to prevent infinite loops
+        // Run the game automatically until someone wins
+        let gameOver = false;
+        let turnCount = 0;
+        const maxTurns = 1000; // Safety limit to prevent infinite loops
 
-    while (!gameOver && turnCount < maxTurns) {
-        turnCount++;
+        while (!gameOver && turnCount < maxTurns) {
+            turnCount++;
 
-        // Check if any player has won
-        const winner = gameState.players.find(p => p.position === 63);
-        if (winner) {
-            gameOver = true;
-            break;
+            // Check if any player has won
+            const winner = gameState.players.find(p => p.position === 63);
+            if (winner) {
+                gameOver = true;
+                break;
+            }
+
+            // Simulate one turn
+            await rollDice();
+
+            // Small delay between turns (0.5 seconds per action as requested)
+            await sleep(500);
+
+            // Check again for winner after the turn completes
+            const winnerAfterTurn = gameState.players.find(p => p.position === 63);
+            if (winnerAfterTurn) {
+                gameOver = true;
+            }
         }
 
-        // Simulate one turn
-        await rollDice();
-
-        // Small delay between turns (0.5 seconds per action as requested)
-        await sleep(500);
-
-        // Check again for winner after the turn completes
-        const winnerAfterTurn = gameState.players.find(p => p.position === 63);
-        if (winnerAfterTurn) {
-            gameOver = true;
-        }
+        gameState.isSimulating = false;
+        debug.log('🎲 Fast Simulator Completed after', turnCount, 'turns');
+    } catch (error) {
+        debug.error('Error in runFastSimulator:', error);
+        gameState.isSimulating = false;
+        showMessage('Simulator encountered an error', 'neutral');
+        document.getElementById('rollDiceBtn').disabled = false;
+        document.getElementById('rollDiceBtn').textContent = 'Roll Dice';
     }
-
-    gameState.isSimulating = false;
-    debug.log('🎲 Fast Simulator Completed after', turnCount, 'turns');
 }
 
 function toggleEasterEgg() {
@@ -1214,47 +1229,55 @@ function sleep(ms) {
 
 // Animate player movement step-by-step
 async function animatePlayerMovement(playerIndex, fromPosition, toPosition) {
-    const player = gameState.players[playerIndex];
+    try {
+        const player = gameState.players[playerIndex];
 
-    // Convert 'start' to 0 for calculation
-    const startPos = fromPosition === 'start' ? 0 : fromPosition;
-    const endPos = toPosition;
+        // Convert 'start' to 0 for calculation
+        const startPos = fromPosition === 'start' ? 0 : fromPosition;
+        const endPos = toPosition;
 
-    // Determine direction and create array of positions to visit
-    const positions = [];
-    if (startPos < endPos) {
-        // Moving forward
-        for (let i = startPos + 1; i <= endPos; i++) {
-            positions.push(i);
+        // Determine direction and create array of positions to visit
+        const positions = [];
+        if (startPos < endPos) {
+            // Moving forward
+            for (let i = startPos + 1; i <= endPos; i++) {
+                positions.push(i);
+            }
+        } else {
+            // Moving backward
+            for (let i = startPos - 1; i >= endPos; i--) {
+                positions.push(i);
+            }
         }
-    } else {
-        // Moving backward
-        for (let i = startPos - 1; i >= endPos; i--) {
-            positions.push(i);
+
+        // Animate through each position
+        for (let i = 0; i < positions.length; i++) {
+            const pos = positions[i];
+            player.position = pos;
+
+            // Update visual display
+            renderPlayerCounters();
+            scrollToPosition(pos);
+
+            // Play footstep sound (will overlap if moving fast, which is fine)
+            playSound('footstep');
+
+            // Wait 0.5 seconds before next step (except on last step)
+            if (i < positions.length - 1) {
+                await sleep(500);
+            }
         }
+
+        // Final update to ensure we're at the correct position
+        player.position = toPosition;
+        updatePlayerPosition(playerIndex);
+    } catch (error) {
+        debug.error('Error in animatePlayerMovement:', error);
+        // Ensure player reaches final position even if animation fails
+        const player = gameState.players[playerIndex];
+        player.position = toPosition;
+        updatePlayerPosition(playerIndex);
     }
-
-    // Animate through each position
-    for (let i = 0; i < positions.length; i++) {
-        const pos = positions[i];
-        player.position = pos;
-
-        // Update visual display
-        renderPlayerCounters();
-        scrollToPosition(pos);
-
-        // Play footstep sound (will overlap if moving fast, which is fine)
-        playSound('footstep');
-
-        // Wait 0.5 seconds before next step (except on last step)
-        if (i < positions.length - 1) {
-            await sleep(500);
-        }
-    }
-
-    // Final update to ensure we're at the correct position
-    player.position = toPosition;
-    updatePlayerPosition(playerIndex);
 }
 
 // Rules Modal Functions
