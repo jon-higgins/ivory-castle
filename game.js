@@ -155,7 +155,8 @@ const SOUNDS = {
     extraTurn: new Audio('extra-turn.mp3'),
     missTurn: new Audio('miss-turn.mp3'),
     archer: new Audio('Arrow.mp3'),
-    winner: new Audio('Winner.mp3')
+    winner: new Audio('Winner.mp3'),
+    footstep: new Audio('footstep.mp3')
 };
 
 // Fallback: Create silent audio if files don't exist
@@ -710,11 +711,14 @@ async function movePlayer(playerIndex, spaces) {
         return;
     }
     
-    // Move to new position
-    player.position = newPos;
+    // Store the starting position for animation
+    const startPos = player.position;
+
+    // Add to journey before animation
     addToJourney(playerIndex, `Rolled ${spaces} → Position ${newPos}`);
-    updatePlayerPosition(playerIndex);
-    scrollToPosition(newPos);
+
+    // Animate movement to new position
+    await animatePlayerMovement(playerIndex, startPos, newPos);
     
     // Check for win
     if (newPos === 63) {
@@ -749,10 +753,10 @@ async function processSpecialSpace(playerIndex, position) {
         console.log(`Forward jump from ${position} to ${move.to}`);
         showMessage(move.text, "happy");
         playSound('happyMove');
-        player.position = move.to;
         addToJourney(playerIndex, `Jumped forward to ${move.to}`);
-        updatePlayerPosition(playerIndex);
-        scrollToPosition(move.to);
+
+        // Animate the forward movement
+        await animatePlayerMovement(playerIndex, position, move.to);
         
         if (move.to === 63) {
             await sleep(1500);
@@ -778,10 +782,10 @@ async function processSpecialSpace(playerIndex, position) {
         } else {
             playSound('sadMove');
         }
-        player.position = move.to;
         addToJourney(playerIndex, `Moved back to ${move.to}`);
-        updatePlayerPosition(playerIndex);
-        scrollToPosition(move.to);
+
+        // Animate the backward movement
+        await animatePlayerMovement(playerIndex, position, move.to);
         await sleep(2000);
         // Check if new position has special rules
         await processSpecialSpace(playerIndex, move.to);
@@ -1035,6 +1039,51 @@ function playSound(soundName) {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Animate player movement step-by-step
+async function animatePlayerMovement(playerIndex, fromPosition, toPosition) {
+    const player = gameState.players[playerIndex];
+
+    // Convert 'start' to 0 for calculation
+    const startPos = fromPosition === 'start' ? 0 : fromPosition;
+    const endPos = toPosition;
+
+    // Determine direction and create array of positions to visit
+    const positions = [];
+    if (startPos < endPos) {
+        // Moving forward
+        for (let i = startPos + 1; i <= endPos; i++) {
+            positions.push(i);
+        }
+    } else {
+        // Moving backward
+        for (let i = startPos - 1; i >= endPos; i--) {
+            positions.push(i);
+        }
+    }
+
+    // Animate through each position
+    for (let i = 0; i < positions.length; i++) {
+        const pos = positions[i];
+        player.position = pos;
+
+        // Update visual display
+        renderPlayerCounters();
+        scrollToPosition(pos);
+
+        // Play footstep sound (will overlap if moving fast, which is fine)
+        playSound('footstep');
+
+        // Wait 0.5 seconds before next step (except on last step)
+        if (i < positions.length - 1) {
+            await sleep(500);
+        }
+    }
+
+    // Final update to ensure we're at the correct position
+    player.position = toPosition;
+    updatePlayerPosition(playerIndex);
 }
 
 // Rules Modal Functions
